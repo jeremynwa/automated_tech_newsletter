@@ -1,6 +1,24 @@
 # automated_tech_newsletter
-Get the top tech news using Gemini + top reddit &amp; top HN &amp; top papers summarized with Ollama, all tracked in an app
 
+Get the top tech news using **Gemini** + top **Reddit** & **Hacker News** posts + top **research papers** summarized with **Ollama**, all tracked in a lightweight scrollable web app.
+
+---
+
+## Overview
+
+The system runs daily and collects:
+
+- 🌍 **World Tech News** → fetched *and summarized* directly via Gemini  
+- 💬 **Community Tech News** → top posts from Reddit + Hacker News, summarized using a local LLM (Ollama)  
+- 📚 **Research Papers** → latest AI/ML papers from arXiv, summarized using Ollama  
+- 🗂️ **HTML digest** saved daily under `/archive/YYYY-MM-DD.html`  
+- 🌐 **Simple Web App** hosted on Google Cloud Platform free tier, showing each day chronologically (infinite scroll style)
+
+---
+
+## Architecture
+
+```mermaid
 flowchart TD
 
     A[Cron: Daily Trigger] --> B[Gemini: Fetch + Summarize 3 World Tech News]
@@ -23,4 +41,3 @@ flowchart TD
 
     G --> H[GCP Free-Tier VM]
     H --> I[Web App: Scrollable Daily Archive]
-
