@@ -4,8 +4,8 @@ Hacker News collector - fetches top stories from HN API.
 
 import requests
 from typing import List, Dict
-from utils.helpers import get_logger
-from utils.config import MAX_ARTICLES_PER_SOURCE
+from ..utils.helpers import get_logger
+from ..utils.config import MAX_ARTICLES_PER_SOURCE
 
 logger = get_logger(__name__)
 
