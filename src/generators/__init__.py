@@ -1,0 +1,3 @@
+"""
+Generator builds HTML output
+"""
