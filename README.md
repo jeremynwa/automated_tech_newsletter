@@ -21,7 +21,7 @@ The system runs daily and collects:
 ```mermaid
 flowchart TD
 
-    A["Cron - Daily Trigger"] --> B["Gemini - Fetch + Summarize World Tech News"]
+    A["Cron - Daily Trigger"] --> B["Gemini - Fetch + Summarize Top 3 World Tech News"]
 
     A --> C["Hacker News API - Top 3"]
     C --> C2["Local LLM (Ollama) - Summarize"]
