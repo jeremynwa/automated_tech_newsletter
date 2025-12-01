@@ -24,13 +24,13 @@ flowchart TD
     A["Cron - Daily Trigger"] --> B["Gemini - Fetch + Summarize Top 3 World Tech News"]
 
     A --> C["Hacker News API - Top 3"]
-    C --> C2["Local LLM (Ollama) - Summarize"]
+    C --> C2["Groq - Summarize"]
 
     A --> D["Reddit API - Top 3"]
-    D --> D2["Local LLM (Ollama) - Summarize"]
+    D --> D2["Groq - Summarize"]
 
     A --> E["arXiv API - 3 New Papers"]
-    E --> E2["Local LLM (Ollama) - Summarize"]
+    E --> E2["Groq - Summarize"]
 
     B --> F["Build Daily Digest HTML"]
     C2 --> F
