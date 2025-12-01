@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tech Digest Archive</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="main-header">
+        <h1>🚀 Tech Digest Archive</h1>
+        <p class="subtitle">Daily AI, Tech, Research & Hacker News Summaries</p>
+      </header>
+
+      {% if digests %}
+      <div class="digests-container">
+        {% for digest in digests %}
+        <div class="digest-card">
+          <div class="digest-header">
+            <div class="digest-date">{{ digest.date }}</div>
+            <a class="view-button" href="/digest/{{ digest.date }}"
+              >View Full Digest</a
+            >
+          </div>
+
+          <div class="digest-preview">
+            <iframe src="/digest/{{ digest.date }}"></iframe>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <p>No digests have been generated yet.</p>
+        <p>Run <code>python main.py</code> to create your first one.</p>
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html>

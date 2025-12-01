@@ -1,0 +1,103 @@
+# ---------------------------------------
+# PYTHON
+# ---------------------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.db
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Byte-compiled files
+*.pyc
+
+# ---------------------------------------
+# ENVIRONMENT & SECRETS
+# ---------------------------------------
+.env
+.env.local
+.env.*.backup
+
+# Never commit API keys
+*.key
+*.secret
+*.token
+
+# ---------------------------------------
+# LOGS & RUNTIME
+# ---------------------------------------
+logs/
+*.log
+*.out
+*.err
+
+# Cron output
+cron.log
+
+# ---------------------------------------
+# ARCHIVE OUTPUT (daily digest files)
+# ---------------------------------------
+archive/
+!archive/.gitkeep  # If you want the folder kept empty in repo
+
+# ---------------------------------------
+# CACHES
+# ---------------------------------------
+.cache/
+.pytest_cache/
+__snapshots__
+
+# ---------------------------------------
+# EDITOR / IDE FILES
+# ---------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*.DS_Store
+*.sublime-workspace
+*.sublime-project
+
+# ---------------------------------------
+# WEBAPP (Flask)
+# ---------------------------------------
+instance/
+*.sqlite3
+*.db
+
+# Flask compiled templates
+webapp/__pycache__/
+webapp/*.pyc
+
+# ---------------------------------------
+# OS / SYSTEM FILES
+# ---------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------
+# DEPLOYMENT
+# ---------------------------------------
+# Gunicorn / Temp PIDs
+gunicorn.pid
+
+# Systemd service artifacts
+*.service~backup
+
+# GCP / cloud metadata
+*.tar.gz
+*.tgz
+*.zip
