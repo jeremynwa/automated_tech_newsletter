@@ -2,7 +2,7 @@
 Main orchestrator - runs the daily tech newsletter pipeline.
 This script:
 1. Collects content from all sources
-2. Summarizes content using Groq (except Gemini news which is pre-summarized)
+2. Summarizes content using Hugging Face (except Gemini news which is pre-summarized)
 3. Generates HTML digest
 4. Saves to archive directory
 """
@@ -14,7 +14,7 @@ from src.collectors.gemini_news import fetch_and_summarize_news
 from src.collectors.hackernews import fetch_top_stories
 from src.collectors.reddit import fetch_top_posts
 from src.collectors.arxiv import fetch_latest_papers
-from src.summarizers.groq_summarizer import summarize_articles
+from src.summarizers.huggingface_summarizer import summarize_articles
 from src.generators.html_generator import generate_daily_html
 
 logger = get_logger(__name__)
@@ -54,7 +54,7 @@ def main():
         
         # === STEP 2: SUMMARIZE CONTENT ===
         logger.info("=" * 50)
-        logger.info("STEP 2: Summarizing content with Groq")
+        logger.info("STEP 2: Summarizing content with Hugging Face")
         logger.info("=" * 50)
         
         # Summarize HN posts

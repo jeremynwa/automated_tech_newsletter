@@ -1,13 +1,9 @@
 # API clients
-groq
 google-generativeai
 requests
 
 # arXiv
-arxiv
-
-# Reddit
-praw
+feedparser
 
 # Web framework
 flask
@@ -21,10 +17,5 @@ python-dateutil
 # HTML generation
 jinja2
 
-# Other
-flask
-google-generativeai
-requests
-feedparser
-python-dotenv
+# Production server
 gunicorn

@@ -22,12 +22,6 @@ python webapp/app.py
 
 ## Getting API Keys
 
-### Groq (Required)
-
-1. Go to https://console.groq.com
-2. Sign up and get API key
-3. Add to `.env`: `GROQ_API_KEY=your_key`
-
 ### Gemini (Required)
 
 1. Go to https://makersuite.google.com/app/apikey
@@ -41,6 +35,8 @@ python webapp/app.py
 3. Add to `.env`:
    - `REDDIT_CLIENT_ID=...`
    - `REDDIT_CLIENT_SECRET=...`
+
+**Note:** Summarization uses free Hugging Face Inference API (no signup needed!)
 
 ## Production Setup (GCP Free Tier VM)
 
@@ -209,4 +205,12 @@ cat .env
 
 # Test API keys
 python -c "from src.utils.config import validate_config; validate_config()"
+```
+
+### Hugging Face taking too long?
+
+```bash
+# First run might take 10-20s per article as model loads
+# Subsequent requests are faster
+# If timeout issues, increase timeout in groq_summarizer.py line 46
 ```
