@@ -28,16 +28,6 @@ python webapp/app.py
 2. Create API key
 3. Add to `.env`: `GEMINI_API_KEY=your_key`
 
-### Reddit (Required)
-
-1. Go to https://www.reddit.com/prefs/apps
-2. Create app (select "script")
-3. Add to `.env`:
-   - `REDDIT_CLIENT_ID=...`
-   - `REDDIT_CLIENT_SECRET=...`
-
-**Note:** Summarization uses free Hugging Face Inference API (no signup needed!)
-
 ## Production Setup (GCP Free Tier VM)
 
 ### 1. Create GCP VM
@@ -155,14 +145,6 @@ Edit `.env`:
 
 ```bash
 MAX_ARTICLES_PER_SOURCE=5  # Default is 3
-```
-
-### Change Subreddits
-
-Edit `.env`:
-
-```bash
-REDDIT_SUBREDDITS=technology,programming,machinelearning,artificial
 ```
 
 ### Customize Gemini Prompt

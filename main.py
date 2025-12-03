@@ -12,7 +12,6 @@ from src.utils.config import validate_config
 from src.utils.helpers import get_logger, get_today_date, get_archive_path, save_html
 from src.collectors.gemini_news import fetch_and_summarize_news
 from src.collectors.hackernews import fetch_top_stories
-from src.collectors.reddit import fetch_top_posts
 from src.collectors.arxiv import fetch_latest_papers
 from src.summarizers.huggingface_summarizer import summarize_articles
 from src.generators.html_generator import generate_daily_html
@@ -44,10 +43,6 @@ def main():
         logger.info("Fetching Hacker News top stories...")
         hn_posts = fetch_top_stories()
         
-        # Reddit
-        logger.info("Fetching Reddit top posts...")
-        reddit_posts = fetch_top_posts()
-        
         # arXiv papers
         logger.info("Fetching arXiv papers...")
         papers = fetch_latest_papers()
@@ -62,11 +57,6 @@ def main():
             logger.info("Summarizing Hacker News posts...")
             hn_posts = summarize_articles(hn_posts)
         
-        # Summarize Reddit posts
-        if reddit_posts:
-            logger.info("Summarizing Reddit posts...")
-            reddit_posts = summarize_articles(reddit_posts)
-        
         # Summarize papers
         if papers:
             logger.info("Summarizing arXiv papers...")
@@ -80,7 +70,6 @@ def main():
         html_content = generate_daily_html(
             gemini_news=gemini_news,
             hn_posts=hn_posts,
-            reddit_posts=reddit_posts,
             papers=papers,
             date=date
         )
@@ -100,7 +89,6 @@ def main():
         logger.info("=" * 50)
         logger.info(f"Gemini News: {len(gemini_news)} articles")
         logger.info(f"Hacker News: {len(hn_posts)} posts")
-        logger.info(f"Reddit: {len(reddit_posts)} posts")
         logger.info(f"arXiv Papers: {len(papers)} papers")
         logger.info(f"Saved to: {archive_path}")
         logger.info("=" * 50)

@@ -77,7 +77,7 @@ def summarize_article(article: Dict) -> Dict:
             # For arXiv papers - use abstract
             content = article['abstract'][:1024]  # BART has 1024 token limit
         else:
-            # For HN/Reddit - use title only (not ideal but we don't have full content)
+            # For HN - use title only (not ideal but we don't have full content)
             content = article['title']
         
         # Get summary from HF

@@ -11,7 +11,6 @@ logger = get_logger(__name__)
 def generate_daily_html(
     gemini_news: List[Dict],
     hn_posts: List[Dict],
-    reddit_posts: List[Dict],
     papers: List[Dict],
     date: str = None
 ) -> str:
@@ -21,7 +20,6 @@ def generate_daily_html(
     Args:
         gemini_news: List of Gemini news articles (already summarized)
         hn_posts: List of HN posts (with summaries)
-        reddit_posts: List of Reddit posts (with summaries)
         papers: List of arXiv papers (with summaries)
         date: Date string (YYYY-MM-DD), defaults to today
     
@@ -152,16 +150,6 @@ def generate_daily_html(
             show_comments=True
         )
     
-    # Community Tech News - Reddit
-    if reddit_posts:
-        html += generate_section(
-            title="💬 Reddit",
-            articles=reddit_posts,
-            show_summary=True,
-            show_score=True,
-            show_comments=True
-        )
-    
     # Research Papers
     if papers:
         html += generate_section(
@@ -194,7 +182,7 @@ def generate_section(
         title: Section title
         articles: List of article dicts
         show_summary: Whether to show summary
-        show_score: Whether to show score (Reddit/HN)
+        show_score: Whether to show score (HN)
         show_comments: Whether to show comments link
         show_authors: Whether to show authors (papers)
     
