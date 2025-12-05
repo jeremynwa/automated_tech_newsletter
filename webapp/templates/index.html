@@ -2,43 +2,266 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tech Digest Archive</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, sans-serif;
+        background: #f5f5f5;
+        color: #333;
+      }
+
+      .main-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 20px;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .main-header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      .subtitle {
+        font-size: 1.1em;
+        opacity: 0.95;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0;
+      }
+
+      .digest-wrapper {
+        background: white;
+        margin: 30px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .digest-wrapper:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      .digest-date-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 30px;
+        font-size: 1.5em;
+        font-weight: 600;
+        border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .digest-content {
+        padding: 0;
+      }
+
+      /* Override styles from embedded digest HTML */
+      .digest-content .header {
+        display: none; /* Hide duplicate header from embedded content */
+      }
+
+      .digest-content .section {
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .empty-state {
+        background: white;
+        margin: 40px 20px;
+        padding: 60px 40px;
+        border-radius: 12px;
+        text-align: center;
+        color: #666;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .empty-state p {
+        font-size: 1.2em;
+        margin-bottom: 15px;
+      }
+
+      .empty-state code {
+        background: #f5f5f5;
+        padding: 5px 10px;
+        border-radius: 4px;
+        color: #667eea;
+        font-family: "Courier New", monospace;
+        font-size: 1em;
+      }
+
+      .scroll-indicator {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+        font-size: 0.9em;
+      }
+
+      /* Back to top button */
+      .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        text-decoration: none;
+        font-size: 24px;
+      }
+
+      .back-to-top.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .back-to-top:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .main-header h1 {
+          font-size: 2em;
+        }
+
+        .subtitle {
+          font-size: 1em;
+        }
+
+        .digest-wrapper {
+          margin: 20px 10px;
+        }
+
+        .digest-date-header {
+          padding: 15px 20px;
+          font-size: 1.2em;
+        }
+
+        .back-to-top {
+          bottom: 20px;
+          right: 20px;
+          width: 45px;
+          height: 45px;
+        }
+      }
+
+      /* Loading animation */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .digest-wrapper {
+        animation: fadeIn 0.5s ease;
+      }
+    </style>
   </head>
-
   <body>
+    <header class="main-header">
+      <h1>🚀 Tech Digest Archive</h1>
+      <p class="subtitle">
+        Daily AI, Tech News, Research & Hacker News Summaries
+      </p>
+    </header>
+
     <div class="container">
-      <header class="main-header">
-        <h1>🚀 Tech Digest Archive</h1>
-        <p class="subtitle">Daily AI, Tech, Research & Hacker News Summaries</p>
-      </header>
+      {% if digests %} {% for digest in digests %}
+      <div class="digest-wrapper">
+        <div class="digest-date-header">📅 {{ digest.formatted_date }}</div>
+        <div class="digest-content">{{ digest.content | safe }}</div>
+      </div>
+      {% endfor %}
 
-      {% if digests %}
-      <div class="digests-container">
-        {% for digest in digests %}
-        <div class="digest-card">
-          <div class="digest-header">
-            <div class="digest-date">{{ digest.date }}</div>
-            <a class="view-button" href="/digest/{{ digest.date }}"
-              >View Full Digest</a
-            >
-          </div>
-
-          <div class="digest-preview">
-            <iframe src="/digest/{{ digest.date }}"></iframe>
-          </div>
-        </div>
-        {% endfor %}
+      <div class="scroll-indicator">
+        <p>✨ That's all for now! Check back tomorrow for more tech news.</p>
       </div>
       {% else %}
       <div class="empty-state">
-        <p>No digests have been generated yet.</p>
-        <p>Run <code>python main.py</code> to create your first one.</p>
+        <p>📭 No digests have been generated yet.</p>
+        <p>Run <code>python main.py</code> to create your first digest.</p>
+        <p style="margin-top: 20px; font-size: 0.9em; color: #999">
+          After running, digests will appear here automatically.
+        </p>
       </div>
       {% endif %}
     </div>
+
+    <!-- Back to top button -->
+    <a href="#" class="back-to-top" id="backToTop">↑</a>
+
+    <script>
+      // Back to top button functionality
+      const backToTop = document.getElementById("backToTop");
+
+      window.addEventListener("scroll", () => {
+        if (window.pageYOffset > 300) {
+          backToTop.classList.add("visible");
+        } else {
+          backToTop.classList.remove("visible");
+        }
+      });
+
+      backToTop.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      });
+
+      // Add subtle scroll animations
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "1";
+            entry.target.style.transform = "translateY(0)";
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll(".digest-wrapper").forEach((el) => {
+        observer.observe(el);
+      });
+    </script>
   </body>
 </html>
