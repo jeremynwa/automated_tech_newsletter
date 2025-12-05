@@ -1,27 +1,50 @@
-"""
-Hugging Face summarizer - uses HF Inference API to summarize content.
-"""
+# src/summarizers/hybrid_summarizer.py
 
-import requests
+import os
 import time
+import logging
+import requests
 from typing import List, Dict
+
+# Optionally import transformers (local summarization fallback)
+try:
+    from transformers import pipeline
+    _TRANSFORMERS_AVAILABLE = True
+except ImportError:
+    _TRANSFORMERS_AVAILABLE = False
+
 from ..utils.helpers import get_logger, truncate_text
-from ..utils.config import HF_API_URL
+from ..utils.config import HF_API_URL  # make sure this is set correctly
 
 logger = get_logger(__name__)
 
-def query_huggingface(text: str, max_retries: int = 3) -> str:
+# If transformers is available, instantiate summarizer pipeline once
+if _TRANSFORMERS_AVAILABLE:
+    try:
+        _local_summarizer = pipeline(
+            "summarization",
+            model=os.getenv("HF_MODEL", "facebook/bart-large-cnn"),
+            truncation=True,
+            # adjust device / kwargs as needed
+        )
+        logger.info("Local summarizer (transformers) loaded")
+    except Exception as e:
+        logger.error("Failed to load local summarizer: %s", e)
+        _local_summarizer = None
+else:
+    logger.warning("transformers library not installed — local fallback disabled.")
+    _local_summarizer = None
+
+
+def _remote_summarize(text: str) -> str:
     """
-    Query Hugging Face Inference API with retry logic.
-    
-    Args:
-        text: Text to summarize
-        max_retries: Number of retries if model is loading
-    
-    Returns:
-        Summary text
+    Try to summarize via Hugging Face Router API.
+    Returns summary string, or raises Exception / returns empty on failure.
     """
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Authorization": f"Bearer {os.getenv('HF_API_KEY', '')}",
+        "Content-Type": "application/json",
+    }
     payload = {
         "inputs": text,
         "parameters": {
@@ -30,91 +53,99 @@ def query_huggingface(text: str, max_retries: int = 3) -> str:
             "do_sample": False
         }
     }
-    
-    for attempt in range(max_retries):
+
+    try:
+        response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=60)
+    except Exception as e:
+        logger.error("Remote summarization request failed: %s", e)
+        raise
+
+    if response.status_code == 200:
         try:
-            response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=30)
-            
-            if response.status_code == 200:
-                result = response.json()
-                if isinstance(result, list) and len(result) > 0:
-                    return result[0].get('summary_text', text[:200])
-                return text[:200]
-            
-            elif response.status_code == 503:
-                # Model is loading, wait and retry
-                logger.warning(f"Model loading, retrying in 10s... (attempt {attempt + 1}/{max_retries})")
-                time.sleep(10)
-                continue
-            
-            else:
-                logger.error(f"HF API error: {response.status_code} - {response.text}")
-                return text[:200]
-        
-        except Exception as e:
-            logger.error(f"Error querying HF API: {e}")
-            if attempt < max_retries - 1:
-                time.sleep(5)
-                continue
-            return text[:200]
-    
-    # If all retries failed
-    return text[:200]
+            result = response.json()
+            # Some models return list of dicts
+            if isinstance(result, list) and result and "summary_text" in result[0]:
+                return result[0]["summary_text"]
+            # Some may return dict with 'generated_text' or similar
+            if isinstance(result, dict) and result.get("generated_text"):
+                return result["generated_text"]
+            # Fallback: maybe plain text
+            return response.text.strip()
+        except ValueError:
+            # not json — maybe plain text
+            return response.text.strip()
+
+    else:
+        # Log errors like 404, 503
+        logger.warning("HF remote summarization failed: %s %s", response.status_code, response.text[:200])
+        raise RuntimeError(f"HF summarization failed: {response.status_code}")
+
+
+def _local_summarize(text: str) -> str:
+    """
+    Summarize locally using transformers (if available).
+    """
+    if _local_summarizer is None:
+        raise RuntimeError("Local summarizer not available (transformers not installed / failed to load)")
+
+    try:
+        # The pipeline returns a list of summaries; take first
+        res = _local_summarizer(
+            text,
+            max_length=150,
+            min_length=30,
+            do_sample=False
+        )
+        if isinstance(res, list) and res:
+            return res[0].get("summary_text") or res[0].get("generated_text") or str(res[0])
+        return str(res)
+    except Exception as e:
+        logger.error("Local summarization failed: %s", e)
+        raise
+
 
 def summarize_article(article: Dict) -> Dict:
     """
-    Summarize a single article using Hugging Face.
-    
-    Args:
-        article: Dict with 'title', 'url', and optionally 'abstract'
-    
-    Returns:
-        Original article dict with added 'summary' field
+    Summarize a single article dict in place: decide which text to use, then summarization.
     """
+    # Choose best textual content available
+    if article.get("content"):
+        content = truncate_text(article["content"], 2000)
+    elif article.get("abstract"):
+        content = article["abstract"][:1024]
+    else:
+        content = article.get("title", "")
+
+    # Try remote first
     try:
-        # Determine what content to summarize
-        if 'abstract' in article and article['abstract']:
-            # For arXiv papers - use abstract
-            content = article['abstract'][:1024]  # BART has 1024 token limit
-        else:
-            # For HN - use title only (not ideal but we don't have full content)
-            content = article['title']
-        
-        # Get summary from HF
-        summary = query_huggingface(content)
-        article['summary'] = summary
-        
+        summary = _remote_summarize(content)
+        article["summary"] = summary
         return article
-    
-    except Exception as e:
-        logger.error(f"Error summarizing article '{article.get('title', 'Unknown')}': {e}")
-        # Fallback
-        if 'abstract' in article:
-            article['summary'] = truncate_text(article['abstract'], 200)
-        else:
-            article['summary'] = article['title']
-        return article
+    except Exception:
+        # Remote failed — fallback to local summarization
+        if _local_summarizer:
+            try:
+                summary = _local_summarize(content)
+                article["summary"] = summary
+                article["_summary_fallback"] = "local"
+                return article
+            except Exception as e:
+                logger.error("Fallback local summarization also failed: %s", e)
+
+    # Worst fallback — just use truncated content / title
+    article["summary"] = truncate_text(content, 200)
+    article["_summary_fallback"] = "none"
+    return article
+
 
 def summarize_articles(articles: List[Dict]) -> List[Dict]:
-    """
-    Summarize multiple articles using Hugging Face.
-    
-    Args:
-        articles: List of article dicts
-    
-    Returns:
-        List of articles with added 'summary' fields
-    """
     summarized = []
-    
     for i, article in enumerate(articles):
-        logger.info(f"Summarizing article {i+1}/{len(articles)}: {article.get('title', 'Unknown')[:50]}...")
-        summarized_article = summarize_article(article)
-        summarized.append(summarized_article)
-        
-        # Small delay to avoid rate limiting
+        logger.info(f"Summarizing article {i+1}/{len(articles)}: {article.get('title','')[:60]}")
+        summarized.append(summarize_article(article))
+
+        # Optional delay to avoid rate limits
         if i < len(articles) - 1:
             time.sleep(1)
-    
-    logger.info(f"Summarized {len(summarized)} articles with Hugging Face")
+    logger.info(f"Summarized {len(summarized)} articles (remote or local fallback).")
     return summarized

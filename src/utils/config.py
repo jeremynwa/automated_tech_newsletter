@@ -23,7 +23,8 @@ ARCHIVE_DIR.mkdir(exist_ok=True)
 
 # Hugging Face configuration
 HF_MODEL = "facebook/bart-large-cnn"  # Free summarization model
-HF_API_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
+HF_API_URL = "https://router.huggingface.co/models/facebook/bart-large-cnn"
+
 
 # Validation
 def validate_config():

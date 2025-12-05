@@ -1,101 +1,75 @@
-"""
-Gemini news collector - fetches and summarizes world tech news using Gemini.
-Note: Gemini does both fetching AND summarizing in one step.
-"""
+# src/collectors/gemini_news.py
 
-import google.generativeai as genai
+from google import genai
+import os
+import logging
 from typing import List, Dict
-from ..utils.helpers import get_logger
-from ..utils.config import GEMINI_API_KEY, MAX_ARTICLES_PER_SOURCE
 
-logger = get_logger(__name__)
+# configure logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
-# Configure Gemini
-genai.configure(api_key=GEMINI_API_KEY)
+# Initialize Gemini client
+# You can either pass the API key directly or rely on environment variable GEMINI_API_KEY
+API_KEY = os.getenv("GEMINI_API_KEY", None)
+if not API_KEY:
+    logger.error("Missing GEMINI_API_KEY environment variable")
+    raise RuntimeError("GEMINI_API_KEY not set")
+client = genai.Client(api_key=API_KEY)
 
-def fetch_and_summarize_news(limit=MAX_ARTICLES_PER_SOURCE) -> List[Dict]:
+
+def fetch_tech_news(limit: int = 5) -> List[Dict]:
     """
-    Fetch and summarize top tech news using Gemini.
-    
-    Note: This function returns already-summarized content.
-    The 'summary' field will contain Gemini's summary.
-    
-    Args:
-        limit: Number of news articles to fetch
-    
-    Returns:
-        List of dicts with keys: title, url, summary, source
+    Fetch a batch of tech news via Gemini.
+    Returns list of dicts: { title, url, summary }
     """
     try:
-        model = genai.GenerativeModel('gemini-pro')
-        
-        # Prompt Gemini to fetch and summarize news
-        # USER: ADD YOUR CUSTOM PROMPT HERE
-        prompt = f"""Find the top {limit} most important tech news stories from today.
-For each story, provide:
-1. Title
-2. Source URL
-3. A 2-3 sentence summary
+        prompt = f"""Give me a list of the top {limit} most important tech news items for today.
+For each news item, output in this format:
 
-Format your response as a list with clear separation between articles.
-Use this format:
----
-Title: [title]
-URL: [url]
-Summary: [summary]
----"""
+Title: <title>
+URL: <original URL>
+Summary: <a 2-3 sentence summary of the news>
 
-        response = model.generate_content(prompt)
-        
-        # Parse Gemini's response
-        articles = parse_gemini_response(response.text)
-        
-        logger.info(f"Fetched and summarized {len(articles)} news articles via Gemini")
-        return articles[:limit]
-    
+Return the result in plain text where each item is separated by a blank line.
+"""
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",  # or gemini-2.5-pro depending on your access
+            contents=prompt
+        )
+        text = response.text.strip()
+        articles = parse_gemini_response(text, limit)
+        logger.info(f"Fetched {len(articles)} news articles via Gemini")
+        return articles
+
     except Exception as e:
-        logger.error(f"Error fetching news with Gemini: {e}")
+        logger.error("Error fetching news with Gemini: %s", e)
         return []
 
-def parse_gemini_response(text: str) -> List[Dict]:
+
+def parse_gemini_response(text: str, limit: int) -> List[Dict]:
     """
-    Parse Gemini's formatted response into structured data.
-    
-    Args:
-        text: Raw text from Gemini
-    
-    Returns:
-        List of article dicts
+    Parse plain-text response from Gemini into structured articles.
+    Expects format:
+    Title: ...
+    URL: ...
+    Summary: ...
+    (blank line)
     """
     articles = []
-    
-    # Split by separator
-    blocks = text.split('---')
-    
-    for block in blocks:
-        block = block.strip()
-        if not block:
-            continue
-        
-        article = {
-            'title': '',
-            'url': '',
-            'summary': '',
-            'source': 'Gemini News'
-        }
-        
-        # Parse each line
-        for line in block.split('\n'):
-            line = line.strip()
-            if line.startswith('Title:'):
-                article['title'] = line.replace('Title:', '').strip()
-            elif line.startswith('URL:'):
-                article['url'] = line.replace('URL:', '').strip()
-            elif line.startswith('Summary:'):
-                article['summary'] = line.replace('Summary:', '').strip()
-        
-        # Only add if we have at least title and summary
-        if article['title'] and article['summary']:
-            articles.append(article)
-    
+    entries = [e.strip() for e in text.split("\n\n") if e.strip()]
+    for entry in entries:
+        lines = entry.split("\n")
+        data = {}
+        for line in lines:
+            if line.startswith("Title:"):
+                data["title"] = line[len("Title:"):].strip()
+            elif line.startswith("URL:"):
+                data["url"] = line[len("URL:"):].strip()
+            elif line.startswith("Summary:"):
+                data["summary"] = line[len("Summary:"):].strip()
+        if "title" in data and "url" in data and "summary" in data:
+            articles.append(data)
+        if len(articles) >= limit:
+            break
     return articles

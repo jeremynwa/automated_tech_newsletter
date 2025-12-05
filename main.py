@@ -10,7 +10,7 @@ This script:
 import sys
 from src.utils.config import validate_config
 from src.utils.helpers import get_logger, get_today_date, get_archive_path, save_html
-from src.collectors.gemini_news import fetch_and_summarize_news
+from src.collectors.gemini_news import fetch_tech_news
 from src.collectors.hackernews import fetch_top_stories
 from src.collectors.arxiv import fetch_latest_papers
 from src.summarizers.huggingface_summarizer import summarize_articles
@@ -37,7 +37,7 @@ def main():
         
         # Gemini news (already summarized)
         logger.info("Fetching world tech news via Gemini...")
-        gemini_news = fetch_and_summarize_news()
+        gemini_news = fetch_tech_news()
         
         # Hacker News
         logger.info("Fetching Hacker News top stories...")
