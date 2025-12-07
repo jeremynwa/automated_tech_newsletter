@@ -1,161 +1,148 @@
-/* Main styles for tech digest archive webapp */
-
+/* --- Global --- */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+  background: #f5f5f5;
+  color: #333;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
+/* --- Header --- */
 .main-header {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    text-align: center;
-    margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px 20px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 200;
 }
 
 .main-header h1 {
-    font-size: 3em;
-    color: #333;
-    margin-bottom: 10px;
+  font-size: 2.4rem;
+  margin-bottom: 10px;
 }
 
 .subtitle {
-    color: #666;
-    font-size: 1.2em;
+  opacity: .95;
 }
 
-.digests-container {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
+/* --- Sticky Filter Bar --- */
+#filters-container {
+  background: white;
+  padding: 20px;
+  margin: 0 auto;
+  margin-top: 10px;
+  max-width: 900px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 100px; /* sits under header */
+  z-index: 150;
 }
 
-.digest-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+/* --- Filters --- */
+.filter-box {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.digest-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-.digest-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.digest-date {
-    font-size: 1.5em;
-    font-weight: 600;
+.search-btn {
+  background: #4c63d2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease;
 }
 
-.view-button {
-    background: white;
-    color: #667eea;
-    padding: 10px 20px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
+.search-btn:hover {
+  background: #3a4fb5;
 }
 
-.view-button:hover {
-    background: #f0f0f0;
-    transform: scale(1.05);
+.range-btn {
+  background: #e5e7ff;
+  color: #4c63d2;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease;
 }
 
-.digest-preview {
-    padding: 0;
-    max-height: 600px;
-    overflow: hidden;
-    position: relative;
+.range-btn.active {
+  background: #4c63d2;
+  color: white;
 }
 
-.digest-preview::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100px;
-    background: linear-gradient(transparent, white);
-    pointer-events: none;
+.range-btn:hover {
+  opacity: 0.9;
 }
 
-.digest-preview iframe {
-    width: 100%;
-    min-height: 400px;
-    border: none;
-    display: block;
+/* --- Digests --- */
+.digest-wrapper {
+  background: white;
+  margin: 30px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.empty-state {
-    background: white;
-    padding: 60px 40px;
-    border-radius: 12px;
-    text-align: center;
-    color: #666;
+.digest-date-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px 30px;
+  font-size: 1.4rem;
+  font-weight: 600;
 }
 
-.empty-state p {
-    font-size: 1.2em;
+.digest-content {
+  padding: 0;
 }
 
-.empty-state code {
-    background: #f5f5f5;
-    padding: 5px 10px;
-    border-radius: 4px;
-    color: #667eea;
-    font-family: 'Courier New', monospace;
+/* --- Back to top --- */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 24px;
+  text-decoration: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: .3s ease;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-
-    .main-header {
-        padding: 30px 20px;
-    }
-
-    .main-header h1 {
-        font-size: 2em;
-    }
-
-    .subtitle {
-        font-size: 1em;
-    }
-
-    .digest-header {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-    }
-
-    .digest-date {
-        font-size: 1.2em;
-    }
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
 }

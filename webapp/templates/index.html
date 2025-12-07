@@ -51,12 +51,6 @@
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         overflow: hidden;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
-
-      .digest-wrapper:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
       }
 
       .digest-date-header {
@@ -69,18 +63,7 @@
       }
 
       .digest-content {
-        padding: 0;
-      }
-
-      /* Override styles from embedded digest HTML */
-      .digest-content .header {
-        display: none; /* Hide duplicate header from embedded content */
-      }
-
-      .digest-content .section {
-        margin: 0;
-        border-radius: 0;
-        box-shadow: none;
+        /* All styling comes from embedded HTML */
       }
 
       .empty-state {
@@ -114,7 +97,6 @@
         font-size: 0.9em;
       }
 
-      /* Back to top button */
       .back-to-top {
         position: fixed;
         bottom: 30px;
@@ -146,49 +128,6 @@
         transform: translateY(-3px);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
       }
-
-      /* Responsive design */
-      @media (max-width: 768px) {
-        .main-header h1 {
-          font-size: 2em;
-        }
-
-        .subtitle {
-          font-size: 1em;
-        }
-
-        .digest-wrapper {
-          margin: 20px 10px;
-        }
-
-        .digest-date-header {
-          padding: 15px 20px;
-          font-size: 1.2em;
-        }
-
-        .back-to-top {
-          bottom: 20px;
-          right: 20px;
-          width: 45px;
-          height: 45px;
-        }
-      }
-
-      /* Loading animation */
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .digest-wrapper {
-        animation: fadeIn 0.5s ease;
-      }
     </style>
   </head>
   <body>
@@ -210,22 +149,16 @@
       <div class="scroll-indicator">
         <p>✨ That's all for now! Check back tomorrow for more tech news.</p>
       </div>
-      {% else %}
       <div class="empty-state">
         <p>📭 No digests have been generated yet.</p>
         <p>Run <code>python main.py</code> to create your first digest.</p>
-        <p style="margin-top: 20px; font-size: 0.9em; color: #999">
-          After running, digests will appear here automatically.
-        </p>
       </div>
       {% endif %}
     </div>
 
-    <!-- Back to top button -->
     <a href="#" class="back-to-top" id="backToTop">↑</a>
 
     <script>
-      // Back to top button functionality
       const backToTop = document.getElementById("backToTop");
 
       window.addEventListener("scroll", () => {
@@ -238,29 +171,7 @@
 
       backToTop.addEventListener("click", (e) => {
         e.preventDefault();
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-      });
-
-      // Add subtle scroll animations
-      const observerOptions = {
-        threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px",
-      };
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
-          }
-        });
-      }, observerOptions);
-
-      document.querySelectorAll(".digest-wrapper").forEach((el) => {
-        observer.observe(el);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
     </script>
   </body>

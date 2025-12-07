@@ -19,3 +19,5 @@ jinja2
 
 # Production server
 gunicorn
+
+beautifulsoup4
