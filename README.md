@@ -2,6 +2,10 @@
 
 Daily tech digest featuring **Gemini** news + **Hacker News** posts + **arXiv papers** summarized with **Hugging Face**, displayed in a unified scrollable web app with automated daily updates.
 
+## 🎥 Demo
+
+Watch the app in action: **[YouTube Demo](https://youtu.be/ClLabD1CmaI)**
+
 ---
 
 ## ✨ Features

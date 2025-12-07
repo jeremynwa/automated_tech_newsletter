@@ -102,7 +102,8 @@
         color: white;
       }
 
-      .custom-date-input {
+      .custom-date-input,
+      .search-input {
         padding: 0.6rem 1.2rem;
         border-radius: 10px;
         border: 2px solid #e2e8f0;
@@ -110,11 +111,13 @@
         color: #475569;
         font-size: 0.9rem;
         font-weight: 600;
-        cursor: pointer;
         transition: all 0.2s ease;
+        flex: 1;
+        min-width: 200px;
       }
 
-      .custom-date-input:focus {
+      .custom-date-input:focus,
+      .search-input:focus {
         outline: none;
         border-color: #06b6d4;
       }
@@ -174,145 +177,196 @@
         margin-bottom: 2rem;
       }
 
-      .section-card {
-        background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(20px);
-        border-radius: 24px;
-        padding: 2.5rem;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-      }
-
-      .section-header {
-        color: #1e293b;
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 3px solid #e2e8f0;
-      }
-
-      .news-item {
-        background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
+      /* Enhanced section styling with hover effects */
+      .section {
+        background: white;
+        padding: 25px;
+        margin-bottom: 25px;
         border-radius: 16px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 2px solid #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
+      }
+
+      .section:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+      }
+
+      .section h2 {
+        color: #0891b2;
+        margin-top: 0;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #0891b2;
+        padding-bottom: 10px;
+        font-size: 1.75rem;
+      }
+
+      /* Enhanced article styling with hover effects */
+      .article {
+        margin-bottom: 25px;
+        padding: 20px;
+        padding-left: 24px;
+        border-bottom: 1px solid #eee;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        border: 2px solid transparent;
         position: relative;
         overflow: hidden;
       }
 
-      .news-item::before {
+      /* Left bar that appears on hover */
+      .article::before {
         content: "";
         position: absolute;
-        top: 0;
         left: 0;
+        top: 0;
         width: 4px;
         height: 100%;
         background: linear-gradient(180deg, #06b6d4 0%, #0891b2 100%);
         transform: scaleY(0);
         transition: transform 0.3s ease;
+        transform-origin: top;
       }
 
-      .news-item:hover {
+      .article:hover {
         transform: translateX(8px);
-        box-shadow: 0 12px 24px rgba(6, 182, 212, 0.15);
         border-color: #06b6d4;
+        background: linear-gradient(135deg, #ecfeff 0%, #ffffff 100%);
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
       }
 
-      .news-item:hover::before {
+      .article:hover::before {
         transform: scaleY(1);
       }
 
-      .news-item:last-child {
-        margin-bottom: 0;
+      .article:last-child {
+        border-bottom: none;
       }
 
-      .news-title {
-        color: #0891b2;
-        font-size: 1.25rem;
+      .article-title {
+        font-size: 1.3em;
         font-weight: 700;
-        margin-bottom: 0.75rem;
+        margin-bottom: 8px;
+        color: #0891b2;
+        transition: color 0.2s ease;
       }
 
-      .news-title a {
+      .article-title a {
         color: inherit;
         text-decoration: none;
         transition: color 0.2s ease;
       }
 
-      .news-title a:hover {
+      .article:hover .article-title,
+      .article:hover .article-title a {
         color: #06b6d4;
       }
 
-      .meta-info {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        margin-bottom: 0.75rem;
-        font-size: 0.9rem;
+      .article-meta {
         color: #64748b;
-      }
-
-      .meta-item {
+        font-size: 0.9em;
+        margin-bottom: 10px;
         display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        gap: 15px;
+        flex-wrap: wrap;
       }
 
-      .badge {
+      .article-summary {
+        line-height: 1.7;
+        color: #475569;
+        margin-bottom: 15px;
+      }
+
+      .article-summary strong {
+        display: block;
+        margin-top: 12px;
+        margin-bottom: 8px;
+        color: #1e293b;
+        font-size: 1.05em;
+      }
+
+      .article-summary ul {
+        margin: 10px 0;
+        padding-left: 20px;
+        list-style-type: disc;
+      }
+
+      .article-summary li {
+        margin-bottom: 8px;
+        line-height: 1.6;
+        color: #475569;
+      }
+
+      .article-summary p {
+        margin-bottom: 10px;
+      }
+
+      .authors {
+        color: #64748b;
+        font-size: 0.9em;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+
+      .links {
+        margin-top: 12px;
+        display: flex;
+        gap: 12px;
+      }
+
+      .links a {
+        display: inline-block;
         background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
         color: white;
-        padding: 0.35rem 0.85rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
+        padding: 8px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.9em;
         font-weight: 600;
-        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
       }
 
-      .news-content {
-        color: #475569;
-        line-height: 1.7;
+      .links a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+      }
+
+      .no-results {
+        text-align: center;
+        padding: 3rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        margin-top: 2rem;
+      }
+
+      .no-results h2 {
+        color: #1e293b;
         margin-bottom: 1rem;
       }
 
-      .action-links {
-        display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
+      .no-results p {
+        color: #64748b;
       }
 
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.6rem 1.2rem;
-        border-radius: 10px;
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
+      .hidden {
+        display: none !important;
       }
 
-      .btn-primary {
-        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-        color: white;
-        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+      .article.keyword-match {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        border-color: #f59e0b;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
       }
 
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+      .article.keyword-match::before {
+        background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
       }
 
-      .btn-secondary {
-        background: #e2e8f0;
-        color: #475569;
-      }
-
-      .btn-secondary:hover {
-        background: #cbd5e0;
-        transform: translateY(-2px);
+      .article.keyword-match:hover {
+        border-color: #d97706;
+        box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
       }
 
       @keyframes fadeInDown {
@@ -350,20 +404,15 @@
           font-size: 1rem;
         }
 
-        .section-card {
+        .section {
           padding: 1.5rem;
         }
 
-        .news-item {
+        .article {
           padding: 1rem;
         }
 
-        .meta-info {
-          flex-wrap: wrap;
-          gap: 0.75rem;
-        }
-
-        .action-links {
+        .links {
           flex-direction: column;
         }
       }
@@ -380,6 +429,18 @@
 
       <div class="filter-bar">
         <div class="filter-section">
+          <label class="filter-label">Search Keywords</label>
+          <div class="filter-options">
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Search articles by keyword..."
+              id="keyword-search"
+            />
+          </div>
+        </div>
+
+        <div class="filter-section">
           <label class="filter-label">Time Range</label>
           <div class="filter-options">
             <button class="filter-btn active" data-range="all">All</button>
@@ -391,6 +452,7 @@
               type="date"
               class="custom-date-input"
               placeholder="Custom Date"
+              id="custom-date"
             />
           </div>
         </div>
@@ -410,659 +472,245 @@
           </div>
         </div>
 
-        <button class="search-button">Apply Filters</button>
+        <button class="search-button" id="apply-filters">Apply Filters</button>
       </div>
 
-      <div class="feed">
-        <!-- December 07, 2025 -->
-        <div class="day-separator">
-          <div class="date-text">December 07, 2025</div>
+      <div class="feed" id="feed">
+        {% for digest in digests %}
+        <div class="digest-day" data-date="{{ digest.date }}">
+          <div class="day-separator">
+            <div class="date-text">{{ digest.formatted_date }}</div>
+          </div>
+
+          <div class="day-content">{{ digest.content|safe }}</div>
         </div>
+        {% endfor %}
+      </div>
 
-        <div class="day-content">
-          <!-- World Tech News Section -->
-          <div class="section-card" data-section="tech">
-            <h2 class="section-header">World Tech News</h2>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://www.apple.com/newsroom" target="_blank"
-                  >Apple Announces M4 Pro Chip with 50% Performance Boost</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>2.3K reactions</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Tech News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                Apple unveiled the M4 Pro chip featuring 3nm+ architecture with
-                50% better performance-per-watt. The new MacBook Pro models will
-                ship next month with up to 128GB unified memory and support for
-                8K displays.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://www.apple.com/newsroom"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://www.tesla.com/blog" target="_blank"
-                  >Tesla's Full Self-Driving Gets Federal Approval</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>1.8K reactions</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Tech News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                Tesla received federal approval for Level 4 autonomous driving
-                in select cities. The system passed rigorous safety tests with a
-                99.97% success rate in simulation and real-world testing.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://www.tesla.com/blog"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://deepmind.google" target="_blank"
-                  >Google DeepMind's AlphaFold 3 Predicts Drug Interactions</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>856 reactions</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Tech News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                DeepMind's latest AlphaFold iteration can now predict molecular
-                interactions with drugs, potentially revolutionizing
-                pharmaceutical research. The model achieved 95% accuracy in
-                predicting protein-drug binding sites.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://deepmind.google"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <!-- Hacker News Section -->
-          <div class="section-card" data-section="hn">
-            <h2 class="section-header">Hacker News</h2>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a
-                  href="https://news.ycombinator.com/item?id=42345678"
-                  target="_blank"
-                  >Using LLMs at Oxide</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>314 points</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Hacker News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                The empathy section is quite interesting Hmmm, I'm a bit
-                confused of their conclusions (encouraging use) given some of
-                the really damning caveats they point out. A tool they
-                themselves deter...
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://news.ycombinator.com/item?id=42345678"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a
-                  href="https://news.ycombinator.com/item?id=42345679"
-                  target="_blank"
-                  >Kilauea erupts, destroying webcam [video]</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>289 points</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Hacker News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                That arcing of the lava really is something to behold. The
-                pressures to push molten rock like that are impressive. Hawai'i
-                Volcanoes National Park is absolutely stunning (and safe, away
-                from the c...
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://news.ycombinator.com/item?id=42345679"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a
-                  href="https://news.ycombinator.com/item?id=42345680"
-                  target="_blank"
-                  >Z2 – Lithographically fabricated IC in a garage fab</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>129 points</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Hacker News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                Love this stuff. Followed a couple of links and ended up on his
-                brother's page, reading about another example of the
-                anti-imperialist technology movement.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://news.ycombinator.com/item?id=42345680"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <!-- Research Papers Section -->
-          <div class="section-card" data-section="research">
-            <h2 class="section-header">Research Papers</h2>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://arxiv.org/abs/2025.12345" target="_blank"
-                  >Quantum Error Correction Breakthrough at MIT</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>542 citations</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Research</span>
-                </div>
-              </div>
-              <div class="news-content">
-                MIT researchers developed a new quantum error correction code
-                that reduces decoherence by 10x. Published in Nature Physics,
-                the technique uses topological qubits with novel braiding
-                patterns.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://arxiv.org/abs/2025.12345"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read Paper</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://arxiv.org/abs/2025.12346" target="_blank"
-                  >Neural Architecture Search via Evolutionary Algorithms</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>387 citations</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Research</span>
-                </div>
-              </div>
-              <div class="news-content">
-                Stanford researchers present a novel approach to neural
-                architecture search using genetic algorithms. The method
-                discovers optimal network topologies 100x faster than
-                traditional NAS.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://arxiv.org/abs/2025.12346"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read Paper</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://arxiv.org/abs/2025.12347" target="_blank"
-                  >Self-Supervised Learning for Protein Structure Prediction</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>623 citations</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Research</span>
-                </div>
-              </div>
-              <div class="news-content">
-                A new self-supervised learning approach for protein folding
-                achieves 92% accuracy without requiring labeled data. The
-                technique leverages transformer architectures and contrastive
-                learning.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://arxiv.org/abs/2025.12347"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read Paper</a
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- December 06, 2025 -->
-        <div class="day-separator">
-          <div class="date-text">December 06, 2025</div>
-        </div>
-
-        <div class="day-content">
-          <!-- World Tech News Section -->
-          <div class="section-card" data-section="tech">
-            <h2 class="section-header">World Tech News</h2>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://www.theverge.com" target="_blank"
-                  >Meta Releases Llama 4 with 10 Trillion Parameters</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>3.1K reactions</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Tech News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                Meta announced Llama 4, their largest open-source language model
-                to date with 10 trillion parameters. The model shows remarkable
-                improvements in reasoning, coding, and multilingual
-                capabilities.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://www.theverge.com"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://techcrunch.com" target="_blank"
-                  >SpaceX Starship Successfully Lands on Mars</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>4.5K reactions</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Tech News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                SpaceX achieved a historic milestone as Starship completed its
-                first successful landing on Mars. The mission marks the
-                beginning of human colonization efforts on the Red Planet.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://techcrunch.com"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://www.theverge.com" target="_blank"
-                  >Microsoft Announces Windows 12 with Native AI Integration</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>2.7K reactions</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Tech News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                Windows 12 introduces deep AI integration across the operating
-                system, featuring real-time language translation, intelligent
-                file management, and context-aware assistance.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://www.theverge.com"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <!-- Hacker News Section -->
-          <div class="section-card" data-section="hn">
-            <h2 class="section-header">Hacker News</h2>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://news.ycombinator.com" target="_blank"
-                  >Show HN: I built a compiler in Rust that compiles to
-                  WebAssembly</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>567 points</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Hacker News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                After 2 years of development, I'm excited to share my compiler
-                project that targets WebAssembly. It features zero-cost
-                abstractions and produces highly optimized WASM binaries.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://news.ycombinator.com"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://news.ycombinator.com" target="_blank"
-                  >Ask HN: Best practices for scaling PostgreSQL to 100TB+?</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>423 points</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Hacker News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                Our startup is hitting PostgreSQL scaling limits at 50TB.
-                Looking for advice on sharding strategies, replication setup,
-                and whether to consider alternatives like CockroachDB.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://news.ycombinator.com"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://news.ycombinator.com" target="_blank"
-                  >The Art of Writing Efficient SQL Queries</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>298 points</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Hacker News</span>
-                </div>
-              </div>
-              <div class="news-content">
-                A deep dive into SQL optimization techniques, covering indexing
-                strategies, query planning, and common performance pitfalls.
-                Includes real-world examples from production systems.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://news.ycombinator.com"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read More</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <!-- Research Papers Section -->
-          <div class="section-card" data-section="research">
-            <h2 class="section-header">Research Papers</h2>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://arxiv.org" target="_blank"
-                  >Attention Is Still All You Need: Transformer Variants
-                  Survey</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>892 citations</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Research</span>
-                </div>
-              </div>
-              <div class="news-content">
-                A comprehensive survey of transformer architecture variants
-                published in the last 5 years. The paper analyzes efficiency
-                improvements, attention mechanisms, and architectural
-                innovations.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://arxiv.org"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read Paper</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://arxiv.org" target="_blank"
-                  >Federated Learning at Scale: Privacy-Preserving Machine
-                  Learning</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>734 citations</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Research</span>
-                </div>
-              </div>
-              <div class="news-content">
-                Novel approaches to federated learning that maintain model
-                accuracy while preserving user privacy. The research
-                demonstrates successful deployment across 10 million edge
-                devices.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://arxiv.org"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read Paper</a
-                >
-              </div>
-            </div>
-
-            <div class="news-item">
-              <div class="news-title">
-                <a href="https://arxiv.org" target="_blank"
-                  >Diffusion Models for High-Resolution Image Synthesis</a
-                >
-              </div>
-              <div class="meta-info">
-                <div class="meta-item">
-                  <span>1.2K citations</span>
-                </div>
-                <div class="meta-item">
-                  <span class="badge">Research</span>
-                </div>
-              </div>
-              <div class="news-content">
-                State-of-the-art diffusion models capable of generating
-                photorealistic 4K images. The paper introduces novel sampling
-                techniques that reduce generation time by 50%.
-              </div>
-              <div class="action-links">
-                <a
-                  href="https://arxiv.org"
-                  target="_blank"
-                  class="btn btn-primary"
-                  >Read Paper</a
-                >
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="no-results hidden" id="no-results">
+        <h2>No Results Found</h2>
+        <p>Try adjusting your filters or search terms</p>
       </div>
     </div>
 
     <script>
-      // Filter functionality
+      // TODAY'S DATE - FIXED
+      const TODAY = new Date();
+      TODAY.setHours(0, 0, 0, 0);
+      console.log("Today is:", TODAY.toDateString());
+
+      // Get all digest dates for filtering
+      const allDigests = document.querySelectorAll(".digest-day");
+      const digestDates = Array.from(allDigests).map((d) => {
+        const dateStr = d.dataset.date;
+        const date = new Date(dateStr + "T00:00:00"); // Force local timezone
+        console.log("Digest date:", dateStr, "→", date.toDateString());
+        return {
+          element: d,
+          date: date,
+          dateStr: dateStr,
+        };
+      });
+
+      // Filter state
+      let activeFilters = {
+        range: "all",
+        types: ["tech", "hn", "research"],
+        keyword: "",
+        customDate: null,
+      };
+
+      // UI Elements
       const rangeButtons = document.querySelectorAll("[data-range]");
       const typeButtons = document.querySelectorAll("[data-type]");
-      const searchButton = document.querySelector(".search-button");
-      const dateInput = document.querySelector(".custom-date-input");
-      const daySeparators = document.querySelectorAll(".day-separator");
-      const dayContents = document.querySelectorAll(".day-content");
+      const applyButton = document.getElementById("apply-filters");
+      const keywordInput = document.getElementById("keyword-search");
+      const customDateInput = document.getElementById("custom-date");
+      const noResults = document.getElementById("no-results");
 
       // Handle range filter buttons
       rangeButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
           rangeButtons.forEach((b) => b.classList.remove("active"));
           btn.classList.add("active");
-          dateInput.value = ""; // Clear custom date when preset is selected
+          activeFilters.range = btn.dataset.range;
+          customDateInput.value = "";
+          activeFilters.customDate = null;
         });
       });
 
       // Handle custom date input
-      dateInput.addEventListener("change", () => {
+      customDateInput.addEventListener("change", () => {
         rangeButtons.forEach((b) => b.classList.remove("active"));
+        activeFilters.range = "custom";
+        activeFilters.customDate = new Date(
+          customDateInput.value + "T00:00:00"
+        );
+        console.log(
+          "Custom date selected:",
+          activeFilters.customDate.toDateString()
+        );
       });
 
       // Handle type filter buttons (multiple selection)
       typeButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
           btn.classList.toggle("active");
-        });
-      });
-
-      // Handle search/filter application
-      searchButton.addEventListener("click", () => {
-        const selectedTypes = Array.from(
-          document.querySelectorAll("[data-type].active")
-        ).map((btn) => btn.dataset.type);
-
-        // Show/hide sections based on selected types
-        document.querySelectorAll("[data-section]").forEach((section) => {
-          const sectionType = section.dataset.section;
-          if (selectedTypes.includes(sectionType)) {
-            section.style.display = "block";
+          const type = btn.dataset.type;
+          if (activeFilters.types.includes(type)) {
+            activeFilters.types = activeFilters.types.filter((t) => t !== type);
           } else {
-            section.style.display = "none";
-          }
-        });
-
-        // Check if any day has visible content
-        dayContents.forEach((dayContent, index) => {
-          const visibleSections = dayContent.querySelectorAll(
-            '[data-section][style="display: block;"], [data-section]:not([style*="display: none"])'
-          );
-          const daySeparator = daySeparators[index];
-
-          if (visibleSections.length === 0) {
-            dayContent.style.display = "none";
-            if (daySeparator) daySeparator.style.display = "none";
-          } else {
-            dayContent.style.display = "grid";
-            if (daySeparator) daySeparator.style.display = "flex";
+            activeFilters.types.push(type);
           }
         });
       });
+
+      // Handle keyword input
+      keywordInput.addEventListener("input", () => {
+        activeFilters.keyword = keywordInput.value.toLowerCase().trim();
+      });
+
+      // Apply filters
+      applyButton.addEventListener("click", applyFilters);
+
+      // Also apply on Enter key in search
+      keywordInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          applyFilters();
+        }
+      });
+
+      function applyFilters() {
+        let visibleCount = 0;
+
+        digestDates.forEach(({ element, date, dateStr }) => {
+          let showDigest = false;
+
+          // Date range filter
+          if (activeFilters.range === "all") {
+            showDigest = true;
+          } else if (
+            activeFilters.range === "custom" &&
+            activeFilters.customDate
+          ) {
+            showDigest = date.getTime() === activeFilters.customDate.getTime();
+            console.log(
+              "Custom filter:",
+              dateStr,
+              date.getTime() === activeFilters.customDate.getTime()
+            );
+          } else if (activeFilters.range === "today") {
+            showDigest = date.getTime() === TODAY.getTime();
+            console.log(
+              "Today filter:",
+              dateStr,
+              date.getTime() === TODAY.getTime()
+            );
+          } else if (activeFilters.range === "3days") {
+            const threeDaysAgo = new Date(TODAY);
+            threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+            showDigest = date >= threeDaysAgo;
+            console.log("3 days filter:", dateStr, date >= threeDaysAgo);
+          } else if (activeFilters.range === "week") {
+            const weekAgo = new Date(TODAY);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            showDigest = date >= weekAgo;
+          } else if (activeFilters.range === "month") {
+            const monthAgo = new Date(TODAY);
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            showDigest = date >= monthAgo;
+          }
+
+          if (!showDigest) {
+            element.classList.add("hidden");
+            return;
+          }
+
+          // Content type filter + Keyword filter at ARTICLE level
+          const sections = element.querySelectorAll(".section");
+          let hasVisibleContent = false;
+
+          sections.forEach((section) => {
+            const sectionHeader = section.querySelector("h2");
+            if (!sectionHeader) return;
+
+            const headerText = sectionHeader.textContent.toLowerCase();
+            let sectionType = "";
+
+            if (
+              headerText.includes("world tech") ||
+              headerText.includes("tech news")
+            ) {
+              sectionType = "tech";
+            } else if (headerText.includes("hacker news")) {
+              sectionType = "hn";
+            } else if (headerText.includes("research")) {
+              sectionType = "research";
+            }
+
+            // Check if this section type is selected
+            const isTypeSelected = activeFilters.types.includes(sectionType);
+
+            if (!isTypeSelected) {
+              section.style.display = "none";
+              return;
+            }
+
+            // If keyword search is active, filter individual articles
+            if (activeFilters.keyword) {
+              const articles = section.querySelectorAll(".article");
+              let visibleArticles = 0;
+
+              articles.forEach((article) => {
+                const articleText = article.textContent.toLowerCase();
+                if (articleText.includes(activeFilters.keyword)) {
+                  article.classList.remove("hidden");
+                  article.classList.add("keyword-match"); // Highlight matching articles
+                  visibleArticles++;
+                } else {
+                  article.classList.add("hidden");
+                  article.classList.remove("keyword-match");
+                }
+              });
+
+              if (visibleArticles > 0) {
+                section.style.display = "block";
+                hasVisibleContent = true;
+              } else {
+                section.style.display = "none";
+              }
+            } else {
+              // No keyword search - show all articles in this section
+              const articles = section.querySelectorAll(".article");
+              articles.forEach((article) => {
+                article.classList.remove("hidden");
+                article.classList.remove("keyword-match");
+              });
+              section.style.display = "block";
+              hasVisibleContent = true;
+            }
+          });
+
+          if (hasVisibleContent) {
+            element.classList.remove("hidden");
+            visibleCount++;
+          } else {
+            element.classList.add("hidden");
+          }
+        });
+
+        // Show/hide no results message
+        if (visibleCount === 0) {
+          noResults.classList.remove("hidden");
+        } else {
+          noResults.classList.add("hidden");
+        }
+
+        console.log("Filter applied. Visible digests:", visibleCount);
+      }
+
+      // Initial load - show everything
+      applyFilters();
     </script>
   </body>
 </html>

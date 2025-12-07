@@ -1,6 +1,7 @@
 # API clients
 google-generativeai
 requests
+openai
 
 # arXiv
 feedparser

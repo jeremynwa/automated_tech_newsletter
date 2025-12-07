@@ -103,6 +103,12 @@ def generate_daily_html(
             line-height: 1.6;
             color: #444;
         }}
+        .article-summary strong {{
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }}
         .authors {{
             color: #888;
             font-size: 0.9em;
@@ -120,14 +126,11 @@ def generate_daily_html(
         .links a:hover {{
             text-decoration: underline;
         }}
-        .emoji {{
-            margin-right: 8px;
-        }}
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🚀 Tech Digest</h1>
+        <h1>Tech Digest</h1>
         <div class="date">{date}</div>
     </div>
 """
@@ -135,7 +138,7 @@ def generate_daily_html(
     # World Tech News (Gemini)
     if gemini_news:
         html += generate_section(
-            title="🌍 World Tech News",
+            title="World Tech News",
             articles=gemini_news,
             show_summary=True
         )
@@ -143,7 +146,7 @@ def generate_daily_html(
     # Community Tech News - Hacker News
     if hn_posts:
         html += generate_section(
-            title="🔥 Hacker News",
+            title="Hacker News",
             articles=hn_posts,
             show_summary=True,
             show_score=True,
@@ -153,7 +156,7 @@ def generate_daily_html(
     # Research Papers
     if papers:
         html += generate_section(
-            title="📚 Research Papers",
+            title="Research Papers",
             articles=papers,
             show_summary=True,
             show_authors=True
@@ -202,11 +205,11 @@ def generate_section(
         # Meta info
         meta_parts = []
         if show_score and 'score' in article:
-            meta_parts.append(f"⬆️ {article['score']} points")
+            meta_parts.append(f"{article['score']} points")
         if 'source' in article:
-            meta_parts.append(f"📰 {article['source']}")
+            meta_parts.append(f"{article['source']}")
         if 'published' in article:
-            meta_parts.append(f"📅 {article['published']}")
+            meta_parts.append(f"{article['published']}")
         
         if meta_parts:
             html += f'<div class="article-meta">{" • ".join(meta_parts)}</div>\n'
@@ -217,11 +220,12 @@ def generate_section(
             authors_str = ', '.join(authors)
             if len(article['authors']) > 3:
                 authors_str += f" et al. ({len(article['authors'])} total)"
-            html += f'<div class="authors">👥 {authors_str}</div>\n'
+            html += f'<div class="authors">{authors_str}</div>\n'
         
         # Summary
         if show_summary and 'summary' in article:
-            html += f'<div class="article-summary">{article["summary"]}</div>\n'
+            summary_html = format_summary(article["summary"])
+            html += f'<div class="article-summary">{summary_html}</div>\n'
         
         # Links
         links = []
@@ -237,3 +241,55 @@ def generate_section(
     
     html += '</div>\n'
     return html
+
+
+def format_summary(summary: str) -> str:
+    """
+    Format summary text with proper bullet points.
+    Converts text bullets (•, *, **) into HTML <ul><li> format.
+    """
+    if not summary:
+        return ""
+    
+    lines = summary.split('\n')
+    formatted = []
+    in_list = False
+    
+    for line in lines:
+        line = line.strip()
+        if not line:
+            if in_list:
+                formatted.append('</ul>')
+                in_list = False
+            continue
+        
+        # Check if line is a bullet point
+        if line.startswith('•') or line.startswith('*') or line.startswith('-'):
+            if not in_list:
+                formatted.append('<ul>')
+                in_list = True
+            # Remove bullet character and add as list item
+            clean_line = line.lstrip('•*- ').strip()
+            # Remove any **text** markdown bold
+            clean_line = clean_line.replace('**', '')
+            formatted.append(f'<li>{clean_line}</li>')
+        
+        # Check if it's a header like "Why This Matters:"
+        elif ':' in line and len(line) < 50:
+            if in_list:
+                formatted.append('</ul>')
+                in_list = False
+            formatted.append(f'<strong>{line}</strong>')
+        
+        # Regular paragraph text
+        else:
+            if in_list:
+                formatted.append('</ul>')
+                in_list = False
+            formatted.append(f'<p>{line}</p>')
+    
+    # Close list if still open
+    if in_list:
+        formatted.append('</ul>')
+    
+    return '\n'.join(formatted)

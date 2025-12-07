@@ -1,151 +1,113 @@
-# src/summarizers/hybrid_summarizer.py
+# src/summarizers/huggingface_summarizer.py
 
 import os
 import time
 import logging
-import requests
 from typing import List, Dict
-
-# Optionally import transformers (local summarization fallback)
-try:
-    from transformers import pipeline
-    _TRANSFORMERS_AVAILABLE = True
-except ImportError:
-    _TRANSFORMERS_AVAILABLE = False
+from openai import OpenAI
 
 from ..utils.helpers import get_logger, truncate_text
-from ..utils.config import HF_API_URL  # make sure this is set correctly
 
 logger = get_logger(__name__)
 
-# If transformers is available, instantiate summarizer pipeline once
-if _TRANSFORMERS_AVAILABLE:
+# Initialize Hugging Face client using OpenAI SDK
+client = OpenAI(
+    base_url="https://router.huggingface.co/v1",
+    api_key=os.getenv("HF_API_KEY") or os.getenv("HF_TOKEN"),  # Support both env var names
+)
+
+
+def _hf_summarize(text: str, title: str = "") -> str:
+    """
+    Summarize text using Hugging Face via OpenAI SDK interface.
+    """
     try:
-        _local_summarizer = pipeline(
-            "summarization",
-            model=os.getenv("HF_MODEL", "facebook/bart-large-cnn"),
-            truncation=True,
-            # adjust device / kwargs as needed
+        prompt = f"""Summarize this article in a clear, accessible way for someone who isn't an expert.
+
+Article Title: {title}
+
+Content:
+{text}
+
+Provide your summary in this format:
+
+Summary: <2-3 sentences explaining what this is about>
+
+Why This Matters:
+• <first key point explained simply>
+• <second key point explained simply>
+• <third key point if relevant>
+
+Keep it concise and use simple language. Focus on practical implications."""
+
+        completion = client.chat.completions.create(
+            model="meta-llama/Llama-3.3-70B-Instruct",  # Good free model
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            max_tokens=300,
+            temperature=0.7
         )
-        logger.info("Local summarizer (transformers) loaded")
+        
+        summary = completion.choices[0].message.content
+        return summary.strip()
+        
     except Exception as e:
-        logger.error("Failed to load local summarizer: %s", e)
-        _local_summarizer = None
-else:
-    logger.warning("transformers library not installed — local fallback disabled.")
-    _local_summarizer = None
-
-
-def _remote_summarize(text: str) -> str:
-    """
-    Try to summarize via Hugging Face Router API.
-    Returns summary string, or raises Exception / returns empty on failure.
-    """
-    headers = {
-        "Authorization": f"Bearer {os.getenv('HF_API_KEY', '')}",
-        "Content-Type": "application/json",
-    }
-    payload = {
-        "inputs": text,
-        "parameters": {
-            "max_length": 150,
-            "min_length": 30,
-            "do_sample": False
-        }
-    }
-
-    try:
-        response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=60)
-    except Exception as e:
-        logger.error("Remote summarization request failed: %s", e)
-        raise
-
-    if response.status_code == 200:
-        try:
-            result = response.json()
-            # Some models return list of dicts
-            if isinstance(result, list) and result and "summary_text" in result[0]:
-                return result[0]["summary_text"]
-            # Some may return dict with 'generated_text' or similar
-            if isinstance(result, dict) and result.get("generated_text"):
-                return result["generated_text"]
-            # Fallback: maybe plain text
-            return response.text.strip()
-        except ValueError:
-            # not json — maybe plain text
-            return response.text.strip()
-
-    else:
-        # Log errors like 404, 503
-        logger.warning("HF remote summarization failed: %s %s", response.status_code, response.text[:200])
-        raise RuntimeError(f"HF summarization failed: {response.status_code}")
-
-
-def _local_summarize(text: str) -> str:
-    """
-    Summarize locally using transformers (if available).
-    """
-    if _local_summarizer is None:
-        raise RuntimeError("Local summarizer not available (transformers not installed / failed to load)")
-
-    try:
-        # The pipeline returns a list of summaries; take first
-        res = _local_summarizer(
-            text,
-            max_length=150,
-            min_length=30,
-            do_sample=False
-        )
-        if isinstance(res, list) and res:
-            return res[0].get("summary_text") or res[0].get("generated_text") or str(res[0])
-        return str(res)
-    except Exception as e:
-        logger.error("Local summarization failed: %s", e)
+        logger.error(f"HF summarization error: {e}")
         raise
 
 
 def summarize_article(article: Dict) -> Dict:
     """
-    Summarize a single article dict in place: decide which text to use, then summarization.
+    Summarize a single article with enhanced formatting.
     """
     # Choose best textual content available
     if article.get("content"):
-        content = truncate_text(article["content"], 2000)
+        content = truncate_text(article["content"], 2500)
     elif article.get("abstract"):
-        content = article["abstract"][:1024]
+        content = article["abstract"][:2000]
     else:
         content = article.get("title", "")
 
-    # Try remote first
-    try:
-        summary = _remote_summarize(content)
-        article["summary"] = summary
+    if not content or len(content) < 50:
+        article["summary"] = article.get("title", "No content available")
         return article
-    except Exception:
-        # Remote failed — fallback to local summarization
-        if _local_summarizer:
-            try:
-                summary = _local_summarize(content)
-                article["summary"] = summary
-                article["_summary_fallback"] = "local"
-                return article
-            except Exception as e:
-                logger.error("Fallback local summarization also failed: %s", e)
 
-    # Worst fallback — just use truncated content / title
-    article["summary"] = truncate_text(content, 200)
-    article["_summary_fallback"] = "none"
+    try:
+        title = article.get('title', 'Untitled')
+        summary = _hf_summarize(content, title)
+        
+        # Clean up the response if it starts with "Summary:"
+        if summary.startswith("Summary:"):
+            summary = summary[8:].strip()
+        
+        article["summary"] = summary
+        logger.info(f"✓ Summarized: {title[:60]}")
+        
+    except Exception as e:
+        logger.error(f"Failed to summarize '{article.get('title', '')[:60]}': {e}")
+        # Fallback: use truncated content
+        article["summary"] = truncate_text(content, 300)
+        article["_summary_fallback"] = "truncated"
+    
     return article
 
 
 def summarize_articles(articles: List[Dict]) -> List[Dict]:
+    """
+    Summarize a list of articles using Hugging Face API.
+    """
     summarized = []
     for i, article in enumerate(articles):
         logger.info(f"Summarizing article {i+1}/{len(articles)}: {article.get('title','')[:60]}")
         summarized.append(summarize_article(article))
-
-        # Optional delay to avoid rate limits
+        
+        # Rate limiting delay
         if i < len(articles) - 1:
             time.sleep(1)
-    logger.info(f"Summarized {len(summarized)} articles (remote or local fallback).")
+    
+    logger.info(f"Summarized {len(summarized)} articles with Hugging Face.")
     return summarized
