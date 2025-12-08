@@ -72,25 +72,126 @@
         width: 250px;
         height: fit-content;
         max-height: calc(100vh - 4rem);
-        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        flex-shrink: 0;
+      }
+
+      /* Saved Items Box */
+      .saved-box {
         background: var(--bg-card);
         border-radius: 16px;
         padding: 1.5rem;
         box-shadow: var(--shadow-sm);
         transition: all 0.3s ease;
-        flex-shrink: 0;
       }
 
-      .toc-sidebar::-webkit-scrollbar {
+      .saved-box-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .home-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.8rem;
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      .home-button:hover {
+        background: var(--accent-secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+      }
+
+      .view-saved-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0.8rem;
+        background: var(--bg-secondary);
+        border: 2px solid var(--accent-primary);
+        color: var(--accent-primary);
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .view-saved-button:hover {
+        background: var(--accent-primary);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .view-saved-button.empty {
+        opacity: 0.5;
+        cursor: default;
+        border-color: var(--border-color);
+        color: var(--text-meta);
+      }
+
+      .view-saved-button.empty:hover {
+        background: var(--bg-secondary);
+        color: var(--text-meta);
+        transform: none;
+      }
+
+      .saved-badge {
+        background: var(--accent-primary);
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      .view-saved-button.empty .saved-badge {
+        background: var(--text-meta);
+      }
+
+      /* TOC Container */
+      .toc-container {
+        background: var(--bg-card);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+        overflow-y: auto;
+        max-height: calc(100vh - 20rem);
+      }
+
+      .toc-container::-webkit-scrollbar {
         width: 6px;
       }
 
-      .toc-sidebar::-webkit-scrollbar-track {
+      .toc-container::-webkit-scrollbar-track {
         background: var(--bg-secondary);
         border-radius: 3px;
       }
 
-      .toc-sidebar::-webkit-scrollbar-thumb {
+      .toc-container::-webkit-scrollbar-thumb {
         background: var(--accent-primary);
         border-radius: 3px;
       }
@@ -143,6 +244,91 @@
       .toc-link.hidden {
         opacity: 0.3;
         pointer-events: none;
+        text-decoration: line-through;
+      }
+
+      /* Floating Action Button */
+      .fab {
+        position: fixed;
+        bottom: 100px;
+        right: 30px;
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 999;
+        border: none;
+        font-size: 24px;
+      }
+
+      .fab.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .fab:hover {
+        transform: translateY(-4px) scale(1.1);
+        box-shadow: 0 6px 16px rgba(6, 182, 212, 0.5);
+      }
+
+      /* FAB Menu */
+      .fab-menu {
+        position: fixed;
+        bottom: 170px;
+        right: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 998;
+      }
+
+      .fab-menu.open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .fab-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--bg-card);
+        padding: 12px 16px;
+        border-radius: 28px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        border: none;
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .fab-menu-item:hover {
+        transform: translateX(-8px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        background: var(--accent-primary);
+        color: white;
+      }
+
+      .fab-menu-item-icon {
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       /* Toggle button for mobile */
@@ -264,32 +450,7 @@
 
       /* Saved articles indicator */
       .saved-count {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: var(--accent-primary);
-        color: white;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-top: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .saved-count:hover {
-        background: var(--accent-secondary);
-        transform: translateY(-2px);
-      }
-
-      .saved-count.empty {
-        opacity: 0.5;
-        cursor: default;
-      }
-
-      .saved-count.empty:hover {
-        transform: none;
+        display: none; /* Hidden - replaced by sidebar saved box */
       }
 
       .filter-label {
@@ -961,10 +1122,17 @@
           border-radius: 0;
           z-index: 1000;
           transition: left 0.3s ease;
+          overflow-y: auto;
+          display: block;
         }
 
         .toc-sidebar.mobile-open {
           left: 0;
+        }
+
+        .saved-box,
+        .toc-container {
+          border-radius: 0;
         }
       }
     </style>
@@ -987,10 +1155,25 @@
     <div class="layout">
       <!-- Table of Contents Sidebar -->
       <aside class="toc-sidebar" id="toc-sidebar">
-        <h3 class="toc-title">📅 Dates</h3>
-        <ul class="toc-list" id="toc-list">
-          <!-- Will be populated by JavaScript -->
-        </ul>
+        <!-- Saved Items Box -->
+        <div class="saved-box">
+          <button class="home-button" id="home-button">
+            <span>🏠</span>
+            <span>Home</span>
+          </button>
+          <button class="view-saved-button" id="view-saved-button">
+            <span>📌 Saved Articles</span>
+            <span class="saved-badge" id="saved-badge">0</span>
+          </button>
+        </div>
+
+        <!-- Dates TOC -->
+        <div class="toc-container">
+          <h3 class="toc-title">📅 Dates</h3>
+          <ul class="toc-list" id="toc-list">
+            <!-- Will be populated by JavaScript -->
+          </ul>
+        </div>
       </aside>
 
       <!-- Main Content -->
@@ -1055,12 +1238,6 @@
         <div class="active-filters" id="active-filters"></div>
 
         <button class="search-button" id="apply-filters">Apply Filters</button>
-
-        <!-- Saved articles count -->
-        <div class="saved-count" id="saved-count" title="View saved articles">
-          <span>📌</span>
-          <span id="saved-count-text">0 saved</span>
-        </div>
       </div>
 
       <!-- Saved Articles View -->
@@ -1096,6 +1273,27 @@
     <button class="back-to-top" id="back-to-top" aria-label="Back to top">
       ↑
     </button>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="fab" aria-label="Quick actions">
+      ⚡
+    </button>
+
+    <!-- FAB Menu -->
+    <div class="fab-menu" id="fab-menu">
+      <button class="fab-menu-item" id="fab-theme">
+        <span class="fab-menu-item-icon" id="fab-theme-icon">🌙</span>
+        <span id="fab-theme-text">Dark Mode</span>
+      </button>
+      <button class="fab-menu-item" id="fab-saved">
+        <span class="fab-menu-item-icon">📌</span>
+        <span>Saved (<span id="fab-saved-count">0</span>)</span>
+      </button>
+      <button class="fab-menu-item" id="fab-scroll-top">
+        <span class="fab-menu-item-icon">↑</span>
+        <span>Back to Top</span>
+      </button>
+    </div>
 
     <script>
       // ===== THEME TOGGLE =====
@@ -1323,6 +1521,21 @@
           }
 
           updateActiveFiltersChips();
+          
+          // FIXED: Update TOC visibility after all digest processing is done
+          setTimeout(() => {
+            document.querySelectorAll('.toc-link').forEach(link => {
+              const dateStr = link.dataset.date;
+              const digestElement = document.querySelector(`.digest-day[data-date="${dateStr}"]`);
+              
+              if (digestElement && digestElement.classList.contains('hidden')) {
+                link.classList.add('hidden');
+              } else {
+                link.classList.remove('hidden');
+              }
+            });
+          }, 50);
+          
           pageTransition.classList.remove('active');
         }, 150);
       }
@@ -1479,14 +1692,15 @@
       let savedArticles = JSON.parse(localStorage.getItem('savedArticles') || '[]');
       
       function updateSavedCount() {
-        const countElement = document.getElementById('saved-count-text');
-        const savedCountBtn = document.getElementById('saved-count');
-        countElement.textContent = `${savedArticles.length} saved`;
+        const badge = document.getElementById('saved-badge');
+        const viewBtn = document.getElementById('view-saved-button');
+        
+        badge.textContent = savedArticles.length;
         
         if (savedArticles.length === 0) {
-          savedCountBtn.classList.add('empty');
+          viewBtn.classList.add('empty');
         } else {
-          savedCountBtn.classList.remove('empty');
+          viewBtn.classList.remove('empty');
         }
       }
 
@@ -1621,12 +1835,13 @@
       }
 
       // Initialize save functionality
-      document.getElementById('saved-count').addEventListener('click', () => {
+      document.getElementById('view-saved-button').addEventListener('click', () => {
         if (savedArticles.length > 0) {
           showSavedArticles();
         }
       });
 
+      document.getElementById('home-button').addEventListener('click', closeSavedView);
       document.getElementById('close-saved-view').addEventListener('click', closeSavedView);
 
       // Add save buttons to all articles
@@ -1641,6 +1856,87 @@
           addSaveButtons();
         }, 200);
       };
+
+      // ===== FLOATING ACTION BUTTON =====
+      const fab = document.getElementById('fab');
+      const fabMenu = document.getElementById('fab-menu');
+      let fabMenuOpen = false;
+
+      // Show/hide FAB on scroll
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+          fab.classList.add('visible');
+        } else {
+          fab.classList.remove('visible');
+          fabMenu.classList.remove('open');
+          fabMenuOpen = false;
+        }
+      });
+
+      // Toggle FAB menu
+      fab.addEventListener('click', () => {
+        fabMenuOpen = !fabMenuOpen;
+        if (fabMenuOpen) {
+          fabMenu.classList.add('open');
+        } else {
+          fabMenu.classList.remove('open');
+        }
+      });
+
+      // Close FAB menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!fab.contains(e.target) && !fabMenu.contains(e.target)) {
+          fabMenu.classList.remove('open');
+          fabMenuOpen = false;
+        }
+      });
+
+      // FAB menu actions
+      document.getElementById('fab-theme').addEventListener('click', () => {
+        themeToggle.click();
+        updateFabThemeButton(html.getAttribute('data-theme'));
+      });
+
+      document.getElementById('fab-saved').addEventListener('click', () => {
+        if (savedArticles.length > 0) {
+          showSavedArticles();
+          fabMenu.classList.remove('open');
+          fabMenuOpen = false;
+        }
+      });
+
+      document.getElementById('fab-scroll-top').addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        fabMenu.classList.remove('open');
+        fabMenuOpen = false;
+      });
+
+      function updateFabThemeButton(theme) {
+        const fabThemeIcon = document.getElementById('fab-theme-icon');
+        const fabThemeText = document.getElementById('fab-theme-text');
+        if (theme === 'dark') {
+          fabThemeIcon.textContent = '☀️';
+          fabThemeText.textContent = 'Light Mode';
+        } else {
+          fabThemeIcon.textContent = '🌙';
+          fabThemeText.textContent = 'Dark Mode';
+        }
+      }
+
+      function updateFabSavedCount() {
+        document.getElementById('fab-saved-count').textContent = savedArticles.length;
+      }
+
+      // Update FAB saved count whenever it changes
+      const originalUpdateSavedCount = updateSavedCount;
+      updateSavedCount = function() {
+        originalUpdateSavedCount();
+        updateFabSavedCount();
+      };
+
+      // Initialize
+      updateFabThemeButton(savedTheme);
+      updateFabSavedCount();
     </script>
   </body>
 </html>
