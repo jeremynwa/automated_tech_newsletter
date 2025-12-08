@@ -12,7 +12,7 @@ from src.utils.config import validate_config
 from src.utils.helpers import get_logger, get_today_date, get_archive_path, save_html
 from src.collectors.gemini_news import fetch_tech_news
 from src.collectors.hackernews import fetch_top_stories
-from src.collectors.arxiv import fetch_latest_papers
+from src.collectors.arxiv_rss import fetch_latest_papers
 from src.summarizers.huggingface_summarizer import summarize_articles
 from src.generators.html_generator import generate_daily_html
 

@@ -46,14 +46,142 @@
       }
 
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter",
-          sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
         background: var(--bg-primary);
         min-height: 100vh;
         padding: 2rem;
         line-height: 1.6;
         color: var(--text-primary);
         transition: background 0.3s ease, color 0.3s ease;
+        display: flex;
+        justify-content: center;
+      }
+
+      .layout {
+        display: flex;
+        gap: 2rem;
+        max-width: 1400px;
+        width: 100%;
+        position: relative;
+      }
+
+      /* Table of Contents Sidebar */
+      .toc-sidebar {
+        position: sticky;
+        top: 2rem;
+        width: 250px;
+        height: fit-content;
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+        background: var(--bg-card);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+      }
+
+      .toc-sidebar::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .toc-sidebar::-webkit-scrollbar-track {
+        background: var(--bg-secondary);
+        border-radius: 3px;
+      }
+
+      .toc-sidebar::-webkit-scrollbar-thumb {
+        background: var(--accent-primary);
+        border-radius: 3px;
+      }
+
+      .toc-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+      }
+
+      .toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .toc-item {
+        margin-bottom: 0.5rem;
+      }
+
+      .toc-link {
+        display: block;
+        padding: 0.6rem 0.8rem;
+        border-radius: 8px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
+      }
+
+      .toc-link:hover {
+        background: var(--bg-secondary);
+        color: var(--accent-primary);
+        border-left-color: var(--accent-primary);
+        transform: translateX(4px);
+      }
+
+      .toc-link.active {
+        background: var(--bg-secondary);
+        color: var(--accent-primary);
+        border-left-color: var(--accent-primary);
+        font-weight: 600;
+      }
+
+      .toc-link.hidden {
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
+      /* Toggle button for mobile */
+      .toc-toggle {
+        display: none;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1001;
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+        transition: all 0.3s ease;
+      }
+
+      .toc-toggle:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(6, 182, 212, 0.5);
+      }
+
+      .toc-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+
+      .toc-overlay.active {
+        display: block;
       }
 
       .container {
@@ -149,6 +277,7 @@
         gap: 0.75rem;
       }
 
+      /* Filter buttons */
       .filter-btn {
         padding: 0.6rem 1.2rem;
         border-radius: 10px;
@@ -168,11 +297,7 @@
       }
 
       .filter-btn.active {
-        background: linear-gradient(
-          135deg,
-          var(--accent-primary) 0%,
-          var(--accent-secondary) 100%
-        );
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
         border-color: var(--accent-primary);
         color: white;
       }
@@ -202,11 +327,7 @@
         padding: 0.9rem;
         border-radius: 12px;
         border: none;
-        background: linear-gradient(
-          135deg,
-          var(--accent-primary) 0%,
-          var(--accent-secondary) 100%
-        );
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
         color: white;
         font-size: 1rem;
         font-weight: 700;
@@ -266,6 +387,7 @@
         animation: fadeInUp 0.8s ease 0.4s both;
       }
 
+      /* Day separator */
       .day-separator {
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
@@ -311,19 +433,23 @@
         animation: fadeInStagger 0.5s ease forwards;
       }
 
-      .section:nth-child(1) {
-        animation-delay: 0.1s;
-      }
-      .section:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-      .section:nth-child(3) {
-        animation-delay: 0.3s;
-      }
+      .section:nth-child(1) { animation-delay: 0.1s; }
+      .section:nth-child(2) { animation-delay: 0.2s; }
+      .section:nth-child(3) { animation-delay: 0.3s; }
 
       .section:hover {
         transform: translateY(-4px);
         box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+      }
+
+      .section h2 {
+        color: var(--accent-secondary);
+        margin-top: 0;
+        margin-bottom: 20px;
+        border-bottom: 3px solid var(--accent-secondary);
+        padding-bottom: 10px;
+        font-size: 1.75rem;
+        transition: color 0.3s ease, border-color 0.3s ease;
       }
 
       .section h2 {
@@ -357,11 +483,7 @@
         top: 0;
         width: 4px;
         height: 100%;
-        background: linear-gradient(
-          180deg,
-          var(--accent-primary) 0%,
-          var(--accent-secondary) 100%
-        );
+        background: linear-gradient(180deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
         transform: scaleY(0);
         transition: transform 0.3s ease;
         transform-origin: top;
@@ -376,6 +498,10 @@
 
       .article:hover::before {
         transform: scaleY(1);
+      }
+
+      .article:last-child {
+        border-bottom: none;
       }
 
       .article:last-child {
@@ -458,11 +584,7 @@
 
       .links a {
         display: inline-block;
-        background: linear-gradient(
-          135deg,
-          var(--accent-primary) 0%,
-          var(--accent-secondary) 100%
-        );
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
         color: white;
         padding: 8px 20px;
         border-radius: 8px;
@@ -485,11 +607,7 @@
         right: 30px;
         width: 56px;
         height: 56px;
-        background: linear-gradient(
-          135deg,
-          var(--accent-primary) 0%,
-          var(--accent-secondary) 100%
-        );
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
         color: white;
         border-radius: 50%;
         display: flex;
@@ -526,11 +644,7 @@
         left: 0;
         width: 0%;
         height: 4px;
-        background: linear-gradient(
-          90deg,
-          var(--accent-primary) 0%,
-          var(--accent-secondary) 100%
-        );
+        background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
         z-index: 9999;
         transition: width 0.1s ease;
         box-shadow: 0 2px 4px rgba(6, 182, 212, 0.3);
@@ -645,6 +759,10 @@
           padding: 1rem;
         }
 
+        .layout {
+          flex-direction: column;
+        }
+
         h1 {
           font-size: 2rem;
         }
@@ -683,6 +801,30 @@
           width: 48px;
           height: 48px;
         }
+
+        /* Mobile TOC */
+        .toc-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .toc-sidebar {
+          position: fixed;
+          top: 0;
+          left: -280px;
+          width: 250px;
+          height: 100vh;
+          max-height: 100vh;
+          margin: 0;
+          border-radius: 0;
+          z-index: 1000;
+          transition: left 0.3s ease;
+        }
+
+        .toc-sidebar.mobile-open {
+          left: 0;
+        }
       }
     </style>
   </head>
@@ -693,7 +835,25 @@
     <!-- Page transition overlay -->
     <div class="page-transition" id="page-transition"></div>
 
-    <div class="container">
+    <!-- TOC Toggle (mobile) -->
+    <button class="toc-toggle" id="toc-toggle" aria-label="Toggle navigation">
+      ☰
+    </button>
+
+    <!-- TOC Overlay (mobile) -->
+    <div class="toc-overlay" id="toc-overlay"></div>
+
+    <div class="layout">
+      <!-- Table of Contents Sidebar -->
+      <aside class="toc-sidebar" id="toc-sidebar">
+        <h3 class="toc-title">📅 Dates</h3>
+        <ul class="toc-list" id="toc-list">
+          <!-- Will be populated by JavaScript -->
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="container">
       <header>
         <h1>Tech Digest</h1>
         <p class="subtitle">
@@ -781,109 +941,105 @@
 
     <script>
       // ===== THEME TOGGLE =====
-      const themeToggle = document.getElementById("theme-toggle");
-      const themeIcon = document.getElementById("theme-icon");
-      const themeText = document.getElementById("theme-text");
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = document.getElementById('theme-icon');
+      const themeText = document.getElementById('theme-text');
       const html = document.documentElement;
 
-      const savedTheme = localStorage.getItem("theme") || "light";
-      html.setAttribute("data-theme", savedTheme);
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      html.setAttribute('data-theme', savedTheme);
       updateThemeButton(savedTheme);
 
-      themeToggle.addEventListener("click", () => {
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
         updateThemeButton(newTheme);
       });
 
       function updateThemeButton(theme) {
-        if (theme === "dark") {
-          themeIcon.textContent = "☀️";
-          themeText.textContent = "Light Mode";
+        if (theme === 'dark') {
+          themeIcon.textContent = '☀️';
+          themeText.textContent = 'Light Mode';
         } else {
-          themeIcon.textContent = "🌙";
-          themeText.textContent = "Dark Mode";
+          themeIcon.textContent = '🌙';
+          themeText.textContent = 'Dark Mode';
         }
       }
 
       // ===== PROGRESS BAR =====
-      const progressBar = document.getElementById("progress-bar");
+      const progressBar = document.getElementById('progress-bar');
 
-      window.addEventListener("scroll", () => {
+      window.addEventListener('scroll', () => {
         const windowHeight = window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
-        const scrollTop =
-          window.pageYOffset || document.documentElement.scrollTop;
-        const scrollPercentage =
-          (scrollTop / (documentHeight - windowHeight)) * 100;
-        progressBar.style.width = scrollPercentage + "%";
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollPercentage = (scrollTop / (documentHeight - windowHeight)) * 100;
+        progressBar.style.width = scrollPercentage + '%';
       });
 
       // ===== BACK TO TOP BUTTON =====
-      const backToTopBtn = document.getElementById("back-to-top");
+      const backToTopBtn = document.getElementById('back-to-top');
 
-      window.addEventListener("scroll", () => {
+      window.addEventListener('scroll', () => {
         if (window.pageYOffset > 300) {
-          backToTopBtn.classList.add("visible");
+          backToTopBtn.classList.add('visible');
         } else {
-          backToTopBtn.classList.remove("visible");
+          backToTopBtn.classList.remove('visible');
         }
       });
 
-      backToTopBtn.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+      backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
 
       // ===== FILTER LOGIC =====
       const TODAY = new Date();
       TODAY.setHours(0, 0, 0, 0);
 
-      const allDigests = document.querySelectorAll(".digest-day");
+      const allDigests = document.querySelectorAll('.digest-day');
       const digestDates = Array.from(allDigests).map((d) => {
         const dateStr = d.dataset.date;
-        const date = new Date(dateStr + "T00:00:00");
+        const date = new Date(dateStr + 'T00:00:00');
         return { element: d, date: date, dateStr: dateStr };
       });
 
       let activeFilters = {
-        range: "all",
-        types: ["tech", "hn", "research"],
-        keyword: "",
+        range: 'all',
+        types: ['tech', 'hn', 'research'],
+        keyword: '',
         customDate: null,
       };
 
-      const rangeButtons = document.querySelectorAll("[data-range]");
-      const typeButtons = document.querySelectorAll("[data-type]");
-      const applyButton = document.getElementById("apply-filters");
-      const keywordInput = document.getElementById("keyword-search");
-      const customDateInput = document.getElementById("custom-date");
-      const noResults = document.getElementById("no-results");
-      const activeFiltersContainer = document.getElementById("active-filters");
-      const pageTransition = document.getElementById("page-transition");
+      const rangeButtons = document.querySelectorAll('[data-range]');
+      const typeButtons = document.querySelectorAll('[data-type]');
+      const applyButton = document.getElementById('apply-filters');
+      const keywordInput = document.getElementById('keyword-search');
+      const customDateInput = document.getElementById('custom-date');
+      const noResults = document.getElementById('no-results');
+      const activeFiltersContainer = document.getElementById('active-filters');
+      const pageTransition = document.getElementById('page-transition');
 
       rangeButtons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          rangeButtons.forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
+        btn.addEventListener('click', () => {
+          rangeButtons.forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
           activeFilters.range = btn.dataset.range;
-          customDateInput.value = "";
+          customDateInput.value = '';
           activeFilters.customDate = null;
         });
       });
 
-      customDateInput.addEventListener("change", () => {
-        rangeButtons.forEach((b) => b.classList.remove("active"));
-        activeFilters.range = "custom";
-        activeFilters.customDate = new Date(
-          customDateInput.value + "T00:00:00"
-        );
+      customDateInput.addEventListener('change', () => {
+        rangeButtons.forEach((b) => b.classList.remove('active'));
+        activeFilters.range = 'custom';
+        activeFilters.customDate = new Date(customDateInput.value + 'T00:00:00');
       });
 
       typeButtons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          btn.classList.toggle("active");
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('active');
           const type = btn.dataset.type;
           if (activeFilters.types.includes(type)) {
             activeFilters.types = activeFilters.types.filter((t) => t !== type);
@@ -893,17 +1049,17 @@
         });
       });
 
-      keywordInput.addEventListener("input", () => {
+      keywordInput.addEventListener('input', () => {
         activeFilters.keyword = keywordInput.value.toLowerCase().trim();
       });
 
-      applyButton.addEventListener("click", applyFilters);
-      keywordInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") applyFilters();
+      applyButton.addEventListener('click', applyFilters);
+      keywordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') applyFilters();
       });
 
       function applyFilters() {
-        pageTransition.classList.add("active");
+        pageTransition.classList.add('active');
 
         setTimeout(() => {
           let visibleCount = 0;
@@ -911,137 +1067,126 @@
           digestDates.forEach(({ element, date, dateStr }) => {
             let showDigest = false;
 
-            if (activeFilters.range === "all") {
+            if (activeFilters.range === 'all') {
               showDigest = true;
-            } else if (
-              activeFilters.range === "custom" &&
-              activeFilters.customDate
-            ) {
-              showDigest =
-                date.getTime() === activeFilters.customDate.getTime();
-            } else if (activeFilters.range === "today") {
+            } else if (activeFilters.range === 'custom' && activeFilters.customDate) {
+              showDigest = date.getTime() === activeFilters.customDate.getTime();
+            } else if (activeFilters.range === 'today') {
               showDigest = date.getTime() === TODAY.getTime();
-            } else if (activeFilters.range === "3days") {
+            } else if (activeFilters.range === '3days') {
               const threeDaysAgo = new Date(TODAY);
               threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
               showDigest = date >= threeDaysAgo;
-            } else if (activeFilters.range === "week") {
+            } else if (activeFilters.range === 'week') {
               const weekAgo = new Date(TODAY);
               weekAgo.setDate(weekAgo.getDate() - 7);
               showDigest = date >= weekAgo;
-            } else if (activeFilters.range === "month") {
+            } else if (activeFilters.range === 'month') {
               const monthAgo = new Date(TODAY);
               monthAgo.setMonth(monthAgo.getMonth() - 1);
               showDigest = date >= monthAgo;
             }
 
             if (!showDigest) {
-              element.classList.add("hidden");
+              element.classList.add('hidden');
               return;
             }
 
-            const sections = element.querySelectorAll(".section");
+            const sections = element.querySelectorAll('.section');
             let hasVisibleContent = false;
 
             sections.forEach((section) => {
-              const sectionHeader = section.querySelector("h2");
+              const sectionHeader = section.querySelector('h2');
               if (!sectionHeader) return;
 
               const headerText = sectionHeader.textContent.toLowerCase();
-              let sectionType = "";
+              let sectionType = '';
 
-              if (
-                headerText.includes("world tech") ||
-                headerText.includes("tech news")
-              ) {
-                sectionType = "tech";
-              } else if (headerText.includes("hacker news")) {
-                sectionType = "hn";
-              } else if (headerText.includes("research")) {
-                sectionType = "research";
+              if (headerText.includes('world tech') || headerText.includes('tech news')) {
+                sectionType = 'tech';
+              } else if (headerText.includes('hacker news')) {
+                sectionType = 'hn';
+              } else if (headerText.includes('research')) {
+                sectionType = 'research';
               }
 
               const isTypeSelected = activeFilters.types.includes(sectionType);
 
               if (!isTypeSelected) {
-                section.style.display = "none";
+                section.style.display = 'none';
                 return;
               }
 
               if (activeFilters.keyword) {
-                const articles = section.querySelectorAll(".article");
+                const articles = section.querySelectorAll('.article');
                 let visibleArticles = 0;
 
                 articles.forEach((article) => {
                   const articleText = article.textContent.toLowerCase();
                   if (articleText.includes(activeFilters.keyword)) {
-                    article.classList.remove("hidden");
-                    article.classList.add("keyword-match");
+                    article.classList.remove('hidden');
+                    article.classList.add('keyword-match');
                     visibleArticles++;
                   } else {
-                    article.classList.add("hidden");
-                    article.classList.remove("keyword-match");
+                    article.classList.add('hidden');
+                    article.classList.remove('keyword-match');
                   }
                 });
 
                 if (visibleArticles > 0) {
-                  section.style.display = "block";
+                  section.style.display = 'block';
                   hasVisibleContent = true;
                 } else {
-                  section.style.display = "none";
+                  section.style.display = 'none';
                 }
               } else {
-                const articles = section.querySelectorAll(".article");
+                const articles = section.querySelectorAll('.article');
                 articles.forEach((article) => {
-                  article.classList.remove("hidden");
-                  article.classList.remove("keyword-match");
+                  article.classList.remove('hidden');
+                  article.classList.remove('keyword-match');
                 });
-                section.style.display = "block";
+                section.style.display = 'block';
                 hasVisibleContent = true;
               }
             });
 
             if (hasVisibleContent) {
-              element.classList.remove("hidden");
+              element.classList.remove('hidden');
               visibleCount++;
             } else {
-              element.classList.add("hidden");
+              element.classList.add('hidden');
             }
           });
 
           if (visibleCount === 0) {
-            noResults.classList.remove("hidden");
+            noResults.classList.remove('hidden');
           } else {
-            noResults.classList.add("hidden");
+            noResults.classList.add('hidden');
           }
 
           updateActiveFiltersChips();
-          pageTransition.classList.remove("active");
+          pageTransition.classList.remove('active');
         }, 150);
       }
 
       function updateActiveFiltersChips() {
-        activeFiltersContainer.innerHTML = "";
-
-        if (activeFilters.range !== "all") {
-          const rangeText =
-            activeFilters.range === "custom"
-              ? `Date: ${customDateInput.value}`
-              : activeFilters.range === "today"
-              ? "Today"
-              : activeFilters.range === "3days"
-              ? "Last 3 Days"
-              : activeFilters.range === "week"
-              ? "Last Week"
-              : "Last Month";
-
+        activeFiltersContainer.innerHTML = '';
+        
+        if (activeFilters.range !== 'all') {
+          const rangeText = activeFilters.range === 'custom' 
+            ? `Date: ${customDateInput.value}` 
+            : activeFilters.range === 'today' ? 'Today'
+            : activeFilters.range === '3days' ? 'Last 3 Days'
+            : activeFilters.range === 'week' ? 'Last Week'
+            : 'Last Month';
+          
           addFilterChip(rangeText, () => {
-            rangeButtons.forEach((b) => {
-              if (b.dataset.range === "all") b.classList.add("active");
-              else b.classList.remove("active");
+            rangeButtons.forEach(b => {
+              if (b.dataset.range === 'all') b.classList.add('active');
+              else b.classList.remove('active');
             });
-            activeFilters.range = "all";
-            customDateInput.value = "";
+            activeFilters.range = 'all';
+            customDateInput.value = '';
             activeFilters.customDate = null;
             applyFilters();
           });
@@ -1049,27 +1194,27 @@
 
         if (activeFilters.keyword) {
           addFilterChip(`Keyword: "${activeFilters.keyword}"`, () => {
-            keywordInput.value = "";
-            activeFilters.keyword = "";
+            keywordInput.value = '';
+            activeFilters.keyword = '';
             applyFilters();
           });
         }
 
         if (activeFilters.types.length < 3) {
-          const disabledTypes = ["tech", "hn", "research"].filter(
-            (t) => !activeFilters.types.includes(t)
+          const disabledTypes = ['tech', 'hn', 'research'].filter(
+            t => !activeFilters.types.includes(t)
           );
           const typeNames = {
-            tech: "World Tech News",
-            hn: "Hacker News",
-            research: "Research Papers",
+            tech: 'World Tech News',
+            hn: 'Hacker News',
+            research: 'Research Papers'
           };
-
-          disabledTypes.forEach((type) => {
+          
+          disabledTypes.forEach(type => {
             addFilterChip(`Hidden: ${typeNames[type]}`, () => {
-              typeButtons.forEach((btn) => {
+              typeButtons.forEach(btn => {
                 if (btn.dataset.type === type) {
-                  btn.classList.add("active");
+                  btn.classList.add('active');
                   activeFilters.types.push(type);
                 }
               });
@@ -1080,19 +1225,97 @@
       }
 
       function addFilterChip(text, onRemove) {
-        const chip = document.createElement("div");
-        chip.className = "filter-chip";
+        const chip = document.createElement('div');
+        chip.className = 'filter-chip';
         chip.innerHTML = `
           <span>${text}</span>
           <span class="filter-chip-close">×</span>
         `;
-        chip
-          .querySelector(".filter-chip-close")
-          .addEventListener("click", onRemove);
+        chip.querySelector('.filter-chip-close').addEventListener('click', onRemove);
         activeFiltersContainer.appendChild(chip);
       }
 
       applyFilters();
+
+      // ===== TABLE OF CONTENTS =====
+      const tocList = document.getElementById('toc-list');
+      const tocSidebar = document.getElementById('toc-sidebar');
+      const tocToggle = document.getElementById('toc-toggle');
+      const tocOverlay = document.getElementById('toc-overlay');
+
+      // Generate TOC from digest dates
+      function generateTOC() {
+        tocList.innerHTML = '';
+        digestDates.forEach(({ element, dateStr }) => {
+          const li = document.createElement('li');
+          li.className = 'toc-item';
+          
+          const a = document.createElement('a');
+          a.className = 'toc-link';
+          a.href = `#date-${dateStr}`;
+          a.textContent = element.querySelector('.date-text').textContent;
+          a.dataset.date = dateStr;
+          
+          a.addEventListener('click', (e) => {
+            e.preventDefault();
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Close mobile menu
+            if (window.innerWidth <= 768) {
+              tocSidebar.classList.remove('mobile-open');
+              tocOverlay.classList.remove('active');
+            }
+          });
+          
+          li.appendChild(a);
+          tocList.appendChild(li);
+        });
+      }
+
+      // Update active TOC item on scroll
+      function updateActiveTOCItem() {
+        const scrollPosition = window.scrollY + 100;
+        
+        let activeDate = null;
+        digestDates.forEach(({ element, dateStr }) => {
+          const rect = element.getBoundingClientRect();
+          const elementTop = rect.top + window.scrollY;
+          
+          if (scrollPosition >= elementTop) {
+            activeDate = dateStr;
+          }
+        });
+        
+        // Update active class
+        document.querySelectorAll('.toc-link').forEach(link => {
+          if (link.dataset.date === activeDate) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+
+      // Mobile TOC toggle
+      tocToggle.addEventListener('click', () => {
+        tocSidebar.classList.add('mobile-open');
+        tocOverlay.classList.add('active');
+      });
+
+      tocOverlay.addEventListener('click', () => {
+        tocSidebar.classList.remove('mobile-open');
+        tocOverlay.classList.remove('active');
+      });
+
+      // Initialize TOC
+      generateTOC();
+      window.addEventListener('scroll', updateActiveTOCItem);
+      updateActiveTOCItem();
+
+      // Add IDs to digest days for anchoring
+      digestDates.forEach(({ element, dateStr }) => {
+        element.id = `date-${dateStr}`;
+      });
     </script>
   </body>
 </html>
