@@ -262,6 +262,36 @@
         margin-bottom: 0;
       }
 
+      /* Saved articles indicator */
+      .saved-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--accent-primary);
+        color: white;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-top: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .saved-count:hover {
+        background: var(--accent-secondary);
+        transform: translateY(-2px);
+      }
+
+      .saved-count.empty {
+        opacity: 0.5;
+        cursor: default;
+      }
+
+      .saved-count.empty:hover {
+        transform: none;
+      }
+
       .filter-label {
         color: var(--text-primary);
         font-size: 0.9rem;
@@ -504,6 +534,40 @@
         border-bottom: none;
       }
 
+      /* Save button */
+      .save-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.5rem 1rem;
+        background: var(--bg-card);
+        border: 2px solid var(--accent-primary);
+        color: var(--accent-primary);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-right: 0.5rem;
+      }
+
+      .save-button:hover {
+        background: var(--accent-primary);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .save-button.saved {
+        background: var(--accent-primary);
+        color: white;
+        border-color: var(--accent-primary);
+      }
+
+      .save-button.saved:hover {
+        background: var(--accent-secondary);
+        border-color: var(--accent-secondary);
+      }
+
       .article:last-child {
         border-bottom: none;
       }
@@ -668,6 +732,83 @@
 
       .no-results p {
         color: var(--text-secondary);
+      }
+
+      /* Saved articles view */
+      .saved-articles-view {
+        background: var(--bg-card);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-md);
+      }
+
+      .saved-articles-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+      }
+
+      .saved-articles-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .close-saved-view {
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .close-saved-view:hover {
+        background: var(--accent-secondary);
+        transform: translateY(-2px);
+      }
+
+      .saved-article-item {
+        background: var(--bg-secondary);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        border: 2px solid var(--border-color);
+        transition: all 0.3s ease;
+      }
+
+      .saved-article-item:hover {
+        border-color: var(--accent-primary);
+        transform: translateX(4px);
+      }
+
+      .saved-article-date {
+        font-size: 0.85rem;
+        color: var(--text-meta);
+        margin-bottom: 0.5rem;
+      }
+
+      .remove-saved {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .remove-saved:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
       }
 
       .hidden {
@@ -914,6 +1055,23 @@
         <div class="active-filters" id="active-filters"></div>
 
         <button class="search-button" id="apply-filters">Apply Filters</button>
+
+        <!-- Saved articles count -->
+        <div class="saved-count" id="saved-count" title="View saved articles">
+          <span>📌</span>
+          <span id="saved-count-text">0 saved</span>
+        </div>
+      </div>
+
+      <!-- Saved Articles View -->
+      <div class="saved-articles-view hidden" id="saved-articles-view">
+        <div class="saved-articles-header">
+          <h2 class="saved-articles-title">📌 Saved Articles</h2>
+          <button class="close-saved-view" id="close-saved-view">Close</button>
+        </div>
+        <div id="saved-articles-list">
+          <!-- Saved articles will be inserted here -->
+        </div>
       </div>
 
       <div class="feed" id="feed">
@@ -1316,6 +1474,173 @@
       digestDates.forEach(({ element, dateStr }) => {
         element.id = `date-${dateStr}`;
       });
+
+      // ===== SAVE FOR LATER FUNCTIONALITY =====
+      let savedArticles = JSON.parse(localStorage.getItem('savedArticles') || '[]');
+      
+      function updateSavedCount() {
+        const countElement = document.getElementById('saved-count-text');
+        const savedCountBtn = document.getElementById('saved-count');
+        countElement.textContent = `${savedArticles.length} saved`;
+        
+        if (savedArticles.length === 0) {
+          savedCountBtn.classList.add('empty');
+        } else {
+          savedCountBtn.classList.remove('empty');
+        }
+      }
+
+      function generateArticleId(title, date) {
+        return `${date}-${title.substring(0, 50)}`.replace(/[^a-zA-Z0-9-]/g, '-');
+      }
+
+      function saveArticle(articleElement, digestDate) {
+        const title = articleElement.querySelector('.article-title a')?.textContent || 'Untitled';
+        const url = articleElement.querySelector('.article-title a')?.href || '#';
+        const summary = articleElement.querySelector('.article-summary')?.innerHTML || '';
+        
+        const articleId = generateArticleId(title, digestDate);
+        
+        // Check if already saved
+        if (savedArticles.some(a => a.id === articleId)) {
+          // Remove
+          savedArticles = savedArticles.filter(a => a.id !== articleId);
+        } else {
+          // Add
+          savedArticles.push({
+            id: articleId,
+            title,
+            url,
+            summary,
+            date: digestDate,
+            savedAt: new Date().toISOString()
+          });
+        }
+        
+        localStorage.setItem('savedArticles', JSON.stringify(savedArticles));
+        updateSavedCount();
+        updateSaveButtons();
+      }
+
+      function updateSaveButtons() {
+        document.querySelectorAll('.article').forEach(article => {
+          const digestDay = article.closest('.digest-day');
+          if (!digestDay) return;
+          
+          const digestDate = digestDay.dataset.date;
+          const title = article.querySelector('.article-title a')?.textContent || 'Untitled';
+          const articleId = generateArticleId(title, digestDate);
+          
+          const saveBtn = article.querySelector('.save-button');
+          if (saveBtn) {
+            const isSaved = savedArticles.some(a => a.id === articleId);
+            if (isSaved) {
+              saveBtn.classList.add('saved');
+              saveBtn.innerHTML = '<span>✓</span><span>Saved</span>';
+            } else {
+              saveBtn.classList.remove('saved');
+              saveBtn.innerHTML = '<span>📌</span><span>Save</span>';
+            }
+          }
+        });
+      }
+
+      function addSaveButtons() {
+        document.querySelectorAll('.article').forEach(article => {
+          // Skip if button already exists
+          if (article.querySelector('.save-button')) return;
+          
+          const linksDiv = article.querySelector('.links');
+          if (!linksDiv) return;
+          
+          const saveBtn = document.createElement('button');
+          saveBtn.className = 'save-button';
+          saveBtn.innerHTML = '<span>📌</span><span>Save</span>';
+          
+          const digestDay = article.closest('.digest-day');
+          const digestDate = digestDay?.dataset.date || '';
+          
+          saveBtn.addEventListener('click', () => {
+            saveArticle(article, digestDate);
+          });
+          
+          linksDiv.insertBefore(saveBtn, linksDiv.firstChild);
+        });
+        
+        updateSaveButtons();
+      }
+
+      function showSavedArticles() {
+        const savedView = document.getElementById('saved-articles-view');
+        const savedList = document.getElementById('saved-articles-list');
+        const feed = document.getElementById('feed');
+        
+        feed.classList.add('hidden');
+        savedView.classList.remove('hidden');
+        
+        if (savedArticles.length === 0) {
+          savedList.innerHTML = '<div class="no-results"><h2>No Saved Articles</h2><p>Save articles to read them later</p></div>';
+          return;
+        }
+        
+        savedList.innerHTML = savedArticles.map(article => `
+          <div class="saved-article-item">
+            <div class="saved-article-date">Saved on ${new Date(article.savedAt).toLocaleDateString()} • From ${article.date}</div>
+            <div class="article-title" style="margin-bottom: 0.5rem;">
+              <a href="${article.url}" target="_blank">${article.title}</a>
+            </div>
+            <div class="article-summary" style="margin-bottom: 1rem;">${article.summary}</div>
+            <div style="display: flex; gap: 0.5rem;">
+              <a href="${article.url}" target="_blank" class="links" style="margin: 0;">
+                <span style="padding: 8px 20px; background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); color: white; border-radius: 8px; text-decoration: none; font-size: 0.9em; font-weight: 600; display: inline-block;">Read More</span>
+              </a>
+              <button class="remove-saved" data-id="${article.id}">Remove</button>
+            </div>
+          </div>
+        `).join('');
+        
+        // Add remove handlers
+        savedList.querySelectorAll('.remove-saved').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const articleId = btn.dataset.id;
+            savedArticles = savedArticles.filter(a => a.id !== articleId);
+            localStorage.setItem('savedArticles', JSON.stringify(savedArticles));
+            updateSavedCount();
+            showSavedArticles();
+            updateSaveButtons();
+          });
+        });
+      }
+
+      function closeSavedView() {
+        const savedView = document.getElementById('saved-articles-view');
+        const feed = document.getElementById('feed');
+        
+        savedView.classList.add('hidden');
+        feed.classList.remove('hidden');
+      }
+
+      // Initialize save functionality
+      document.getElementById('saved-count').addEventListener('click', () => {
+        if (savedArticles.length > 0) {
+          showSavedArticles();
+        }
+      });
+
+      document.getElementById('close-saved-view').addEventListener('click', closeSavedView);
+
+      // Add save buttons to all articles
+      addSaveButtons();
+      updateSavedCount();
+
+      // Re-add save buttons after filtering
+      const originalApplyFilters = applyFilters;
+      applyFilters = function() {
+        originalApplyFilters();
+        setTimeout(() => {
+          addSaveButtons();
+        }, 200);
+      };
     </script>
   </body>
 </html>
