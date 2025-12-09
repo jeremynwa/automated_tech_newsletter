@@ -8,24 +8,16 @@ from ..utils.helpers import get_logger
 
 logger = get_logger(__name__)
 
+# Dans src/generators/html_generator.py
+# Remplacer la fin de la fonction generate_daily_html()
+
 def generate_daily_html(
     gemini_news: List[Dict],
     hn_posts: List[Dict],
     papers: List[Dict],
     date: str = None
 ) -> str:
-    """
-    Generate HTML digest for the day.
-    
-    Args:
-        gemini_news: List of Gemini news articles (already summarized)
-        hn_posts: List of HN posts (with summaries)
-        papers: List of arXiv papers (with summaries)
-        date: Date string (YYYY-MM-DD), defaults to today
-    
-    Returns:
-        Complete HTML string
-    """
+    """Generate HTML digest for the day."""
     if date is None:
         date = datetime.now().strftime('%Y-%m-%d')
     
@@ -276,56 +268,14 @@ def generate_daily_html(
             show_authors=True
         )
     
-    # Add inline JavaScript for share functionality
+    # PAS DE JAVASCRIPT INLINE ICI - utilise share.js à la place
     html += """
-<script>
-function toggleShareMenu(button) {
-  const menu = button.nextElementSibling;
-  const allMenus = document.querySelectorAll('.share-menu');
-  allMenus.forEach(m => {
-    if (m !== menu) m.classList.remove('active');
-  });
-  menu.classList.toggle('active');
-  event.stopPropagation();
-}
-
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.share-container')) {
-    document.querySelectorAll('.share-menu').forEach(menu => {
-      menu.classList.remove('active');
-    });
-  }
-});
-
-function shareLinkedIn(url) {
-  window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url), '_blank', 'width=600,height=600');
-}
-
-function shareTwitter(url, title) {
-  window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title), '_blank', 'width=600,height=600');
-}
-
-function copyLink(url, button) {
-  navigator.clipboard.writeText(url).then(() => {
-    const originalHTML = button.innerHTML;
-    button.classList.add('copied');
-    button.innerHTML = '<span class="share-icon">✓</span> Copied!';
-    setTimeout(() => {
-      button.classList.remove('copied');
-      button.innerHTML = originalHTML;
-    }, 2000);
-  }).catch(err => {
-    alert('Failed to copy link: ' + url);
-  });
-}
-</script>
 </body>
 </html>
 """
     
     logger.info(f"Generated HTML digest for {date}")
     return html
-
 
 def generate_section(
     title: str,
