@@ -15,6 +15,7 @@ from src.collectors.hackernews import fetch_top_stories
 from src.collectors.arxiv_rss import fetch_latest_papers
 from src.summarizers.huggingface_summarizer import summarize_articles
 from src.generators.html_generator import generate_daily_html
+from src.utils.fetch_article_images import add_images_to_articles
 
 logger = get_logger(__name__)
 
@@ -46,6 +47,22 @@ def main():
         # arXiv papers
         logger.info("Fetching arXiv papers...")
         papers = fetch_latest_papers()
+        
+        # === STEP 1.5: FETCH ARTICLE IMAGES ===
+        logger.info("=" * 50)
+        logger.info("STEP 1.5: Fetching article images")
+        logger.info("=" * 50)
+
+        # Add images to HN posts
+        if hn_posts:
+            logger.info("Fetching images for Hacker News posts...")
+            hn_posts = add_images_to_articles(hn_posts)
+
+        # Add images to papers (arXiv doesn't have images typically, skip)
+        # Gemini news already has URLs, add images
+        if gemini_news:
+            logger.info("Fetching images for tech news...")
+            gemini_news = add_images_to_articles(gemini_news)
         
         # === STEP 2: SUMMARIZE CONTENT ===
         logger.info("=" * 50)

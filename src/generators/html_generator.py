@@ -170,6 +170,11 @@ def generate_daily_html(
     logger.info(f"Generated HTML digest for {date}")
     return html
 
+"""
+Updated generate_section function in src/generators/html_generator.py
+Replace the existing generate_section function with this enhanced version
+"""
+
 def generate_section(
     title: str,
     articles: List[Dict],
@@ -179,23 +184,25 @@ def generate_section(
     show_authors: bool = False
 ) -> str:
     """
-    Generate HTML section for a category.
-    
-    Args:
-        title: Section title
-        articles: List of article dicts
-        show_summary: Whether to show summary
-        show_score: Whether to show score (HN)
-        show_comments: Whether to show comments link
-        show_authors: Whether to show authors (papers)
-    
-    Returns:
-        HTML string for the section
+    Generate HTML section for a category with images and share buttons.
     """
     html = f'<div class="section"><h2>{title}</h2>\n'
     
     for article in articles:
         html += '<div class="article">\n'
+        
+        # Article image (if available)
+        if article.get('image_url'):
+            article_url = article.get('url', '#')
+            html += f'''<div class="article-image-container">
+                <a href="{article_url}" target="_blank">
+                    <img src="{article['image_url']}" 
+                         alt="{article.get('title', 'Article image')}" 
+                         class="article-image"
+                         loading="lazy"
+                         onerror="this.parentElement.parentElement.style.display='none'">
+                </a>
+            </div>\n'''
         
         # Title
         article_title = article.get('title', 'No title')
@@ -216,7 +223,7 @@ def generate_section(
         
         # Authors (for papers)
         if show_authors and 'authors' in article:
-            authors = article['authors'][:3]  # Show first 3 authors
+            authors = article['authors'][:3]
             authors_str = ', '.join(authors)
             if len(article['authors']) > 3:
                 authors_str += f" et al. ({len(article['authors'])} total)"
@@ -224,10 +231,11 @@ def generate_section(
         
         # Summary
         if show_summary and 'summary' in article:
+            from ..generators.html_generator import format_summary
             summary_html = format_summary(article["summary"])
             html += f'<div class="article-summary">{summary_html}</div>\n'
         
-        # Links
+        # Links with share button
         links = []
         if 'url' in article:
             links.append(f'<a href="{article["url"]}" target="_blank">Read More</a>')
@@ -235,7 +243,31 @@ def generate_section(
             links.append(f'<a href="{article["comments_url"]}" target="_blank">Comments</a>')
         
         if links:
-            html += f'<div class="links">{" ".join(links)}</div>\n'
+            html += f'<div class="links">{" ".join(links)}'
+            
+            # Share button with dropdown
+            share_url = article.get('url', article.get('comments_url', ''))
+            share_title = article_title.replace('"', '&quot;')
+            
+            html += f'''
+            <div class="share-container">
+                <button class="share-button" onclick="toggleShareMenu(this)">
+                    <span>📤</span> Share
+                </button>
+                <div class="share-menu">
+                    <button class="share-option" onclick="shareLinkedIn('{share_url}')">
+                        <span class="share-icon">💼</span> LinkedIn
+                    </button>
+                    <button class="share-option" onclick="shareTwitter('{share_url}', '{share_title}')">
+                        <span class="share-icon">🐦</span> Twitter
+                    </button>
+                    <button class="share-option" onclick="copyLink('{share_url}', this)">
+                        <span class="share-icon">🔗</span> Copy Link
+                    </button>
+                </div>
+            </div>
+            '''
+            html += '</div>\n'
         
         html += '</div>\n'
     
