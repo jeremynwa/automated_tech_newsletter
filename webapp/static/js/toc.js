@@ -1,6 +1,4 @@
 // ===== TABLE OF CONTENTS =====
-import { digestDates } from './filters.js';
-
 const tocList = document.getElementById('toc-list');
 const tocSidebar = document.getElementById('toc-sidebar');
 const tocToggle = document.getElementById('toc-toggle');

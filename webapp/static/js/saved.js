@@ -1,6 +1,4 @@
 // ===== SAVE FOR LATER FUNCTIONALITY =====
-import { applyFilters } from './filters.js';
-
 let savedArticles = JSON.parse(localStorage.getItem('savedArticles') || '[]');
 
 function updateSavedCount() {
@@ -162,12 +160,11 @@ document.getElementById('close-saved-view').addEventListener('click', closeSaved
 addSaveButtons();
 updateSavedCount();
 
+// Re-add save buttons after filtering
 const originalApplyFilters = applyFilters;
-window.applyFilters = function() {
+applyFilters = function() {
   originalApplyFilters();
   setTimeout(() => {
     addSaveButtons();
   }, 200);
 };
-
-export { showSavedArticles, updateSavedCount, savedArticles };

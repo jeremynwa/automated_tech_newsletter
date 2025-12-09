@@ -254,5 +254,3 @@ function addFilterChip(text, onRemove) {
 }
 
 applyFilters();
-
-export { applyFilters };

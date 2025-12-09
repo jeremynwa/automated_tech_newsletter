@@ -1,11 +1,6 @@
 // ===== FLOATING ACTION BUTTON =====
-import { updateThemeButton, savedTheme } from './theme.js';
-import { showSavedArticles, savedArticles } from './saved.js';
-
 const fab = document.getElementById('fab');
 const fabMenu = document.getElementById('fab-menu');
-const themeToggle = document.getElementById('theme-toggle');
-const html = document.documentElement;
 let fabMenuOpen = false;
 
 window.addEventListener('scroll', () => {

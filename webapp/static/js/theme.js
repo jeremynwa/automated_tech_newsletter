@@ -25,5 +25,3 @@ function updateThemeButton(theme) {
     themeText.textContent = 'Dark Mode';
   }
 }
-
-export { updateThemeButton, savedTheme };

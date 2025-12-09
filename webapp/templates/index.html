@@ -8,7 +8,7 @@
     <!-- External CSS -->
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='index.css') }}"
+      href="{{ url_for('static', filename='css/main.css') }}"
     />
   </head>
 
@@ -155,6 +155,23 @@
     </div>
 
     <!-- External JS -->
-    <script src="{{ url_for('static', filename='index.js') }}" defer></script>
+    <script
+      src="{{ url_for('static', filename='js/theme.js') }}"
+      defer
+    ></script>
+    <script
+      src="{{ url_for('static', filename='js/progress.js') }}"
+      defer
+    ></script>
+    <script
+      src="{{ url_for('static', filename='js/filters.js') }}"
+      defer
+    ></script>
+    <script src="{{ url_for('static', filename='js/toc.js') }}" defer></script>
+    <script
+      src="{{ url_for('static', filename='js/saved.js') }}"
+      defer
+    ></script>
+    <script src="{{ url_for('static', filename='js/fab.js') }}" defer></script>
   </body>
 </html>
