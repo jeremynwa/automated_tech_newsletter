@@ -1,5 +1,5 @@
 """
-HTML generator - builds daily digest HTML from collected and summarized content.
+HTML Generator for Daily Tech Digest
 """
 
 from typing import List, Dict
@@ -82,6 +82,26 @@ def generate_daily_html(
         .article:last-child {{
             border-bottom: none;
         }}
+        
+        /* Article images */
+        .article-image-container {{
+            width: 100%;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }}
+        .article-image {{
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }}
+        .article-image-container:hover .article-image {{
+            transform: scale(1.05);
+        }}
+        
         .article-title {{
             font-size: 1.3em;
             font-weight: 600;
@@ -109,6 +129,13 @@ def generate_daily_html(
             margin-bottom: 8px;
             color: #1e293b;
         }}
+        .article-summary ul {{
+            margin: 10px 0;
+            padding-left: 20px;
+        }}
+        .article-summary li {{
+            margin-bottom: 8px;
+        }}
         .authors {{
             color: #888;
             font-size: 0.9em;
@@ -116,15 +143,102 @@ def generate_daily_html(
         }}
         .links {{
             margin-top: 10px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
         }}
         .links a {{
-            color: #667eea;
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
             text-decoration: none;
-            margin-right: 15px;
             font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }}
         .links a:hover {{
-            text-decoration: underline;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }}
+        
+        /* Share button */
+        .share-container {{
+            position: relative;
+            display: inline-block;
+        }}
+        .share-button {{
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 8px 20px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }}
+        .share-button:hover {{
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }}
+        .share-menu {{
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            margin-bottom: 0.5rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+            min-width: 160px;
+            overflow: hidden;
+        }}
+        .share-menu.active {{
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }}
+        .share-option {{
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            color: #333;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }}
+        .share-option:last-child {{
+            border-bottom: none;
+        }}
+        .share-option:hover {{
+            background: #667eea;
+            color: white;
+        }}
+        .share-icon {{
+            font-size: 1.2rem;
+        }}
+        .share-option.copied {{
+            background: #10b981;
+            color: white;
         }}
     </style>
 </head>
@@ -162,7 +276,49 @@ def generate_daily_html(
             show_authors=True
         )
     
+    # Add inline JavaScript for share functionality
     html += """
+<script>
+function toggleShareMenu(button) {
+  const menu = button.nextElementSibling;
+  const allMenus = document.querySelectorAll('.share-menu');
+  allMenus.forEach(m => {
+    if (m !== menu) m.classList.remove('active');
+  });
+  menu.classList.toggle('active');
+  event.stopPropagation();
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.share-container')) {
+    document.querySelectorAll('.share-menu').forEach(menu => {
+      menu.classList.remove('active');
+    });
+  }
+});
+
+function shareLinkedIn(url) {
+  window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url), '_blank', 'width=600,height=600');
+}
+
+function shareTwitter(url, title) {
+  window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title), '_blank', 'width=600,height=600');
+}
+
+function copyLink(url, button) {
+  navigator.clipboard.writeText(url).then(() => {
+    const originalHTML = button.innerHTML;
+    button.classList.add('copied');
+    button.innerHTML = '<span class="share-icon">✓</span> Copied!';
+    setTimeout(() => {
+      button.classList.remove('copied');
+      button.innerHTML = originalHTML;
+    }, 2000);
+  }).catch(err => {
+    alert('Failed to copy link: ' + url);
+  });
+}
+</script>
 </body>
 </html>
 """
@@ -170,10 +326,6 @@ def generate_daily_html(
     logger.info(f"Generated HTML digest for {date}")
     return html
 
-"""
-Updated generate_section function in src/generators/html_generator.py
-Replace the existing generate_section function with this enhanced version
-"""
 
 def generate_section(
     title: str,
@@ -194,10 +346,11 @@ def generate_section(
         # Article image (if available)
         if article.get('image_url'):
             article_url = article.get('url', '#')
+            article_title_escaped = article.get('title', 'Article image').replace('"', '&quot;')
             html += f'''<div class="article-image-container">
                 <a href="{article_url}" target="_blank">
                     <img src="{article['image_url']}" 
-                         alt="{article.get('title', 'Article image')}" 
+                         alt="{article_title_escaped}" 
                          class="article-image"
                          loading="lazy"
                          onerror="this.parentElement.parentElement.style.display='none'">
@@ -231,7 +384,6 @@ def generate_section(
         
         # Summary
         if show_summary and 'summary' in article:
-            from ..generators.html_generator import format_summary
             summary_html = format_summary(article["summary"])
             html += f'<div class="article-summary">{summary_html}</div>\n'
         
@@ -243,31 +395,29 @@ def generate_section(
             links.append(f'<a href="{article["comments_url"]}" target="_blank">Comments</a>')
         
         if links:
-            html += f'<div class="links">{" ".join(links)}'
+            html += f'<div class="links">\n{chr(10).join(links)}\n'
             
             # Share button with dropdown
             share_url = article.get('url', article.get('comments_url', ''))
-            share_title = article_title.replace('"', '&quot;')
+            share_title = article_title.replace('"', '&quot;').replace("'", "\\'")
             
-            html += f'''
-            <div class="share-container">
-                <button class="share-button" onclick="toggleShareMenu(this)">
-                    <span>📤</span> Share
-                </button>
-                <div class="share-menu">
-                    <button class="share-option" onclick="shareLinkedIn('{share_url}')">
-                        <span class="share-icon">💼</span> LinkedIn
-                    </button>
-                    <button class="share-option" onclick="shareTwitter('{share_url}', '{share_title}')">
-                        <span class="share-icon">🐦</span> Twitter
-                    </button>
-                    <button class="share-option" onclick="copyLink('{share_url}', this)">
-                        <span class="share-icon">🔗</span> Copy Link
-                    </button>
-                </div>
-            </div>
-            '''
-            html += '</div>\n'
+            html += f'''<div class="share-container">
+    <button class="share-button" onclick="toggleShareMenu(this)">
+        <span>📤</span> Share
+    </button>
+    <div class="share-menu">
+        <button class="share-option" onclick="shareLinkedIn('{share_url}')">
+            <span class="share-icon">💼</span> LinkedIn
+        </button>
+        <button class="share-option" onclick="shareTwitter('{share_url}', '{share_title}')">
+            <span class="share-icon">🐦</span> Twitter
+        </button>
+        <button class="share-option" onclick="copyLink('{share_url}', this)">
+            <span class="share-icon">🔗</span> Copy Link
+        </button>
+    </div>
+</div>'''
+            html += '\n</div>\n'
         
         html += '</div>\n'
     
