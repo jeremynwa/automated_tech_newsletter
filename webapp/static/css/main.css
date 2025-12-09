@@ -1,0 +1,10 @@
+/* Main CSS file - imports all modules */
+@import url('base.css');
+@import url('header.css');
+@import url('sidebar.css');
+@import url('filters.css');
+@import url('articles.css');
+@import url('ui-elements.css');
+@import url('saved.css');
+@import url('animations.css');
+@import url('responsive.css');
