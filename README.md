@@ -4,7 +4,7 @@ Daily tech digest featuring **Gemini** news + **Hacker News** posts + **arXiv pa
 
 ## 🎥 Demo
 
-Watch the app in action: **[YouTube Demo](https://youtu.be/ClLabD1CmaI)**
+Watch the app in action: **[YouTube Demo](https://youtu.be/sbwNiX2w8ww)**
 
 ---
 
