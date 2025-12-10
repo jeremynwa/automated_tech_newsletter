@@ -1,5 +1,4 @@
-// ===== GLOBAL NEWSLETTER TTS SYSTEM =====
-// FULLY FIXED: Starts properly, restart works, cleanup works
+// ===== GLOBAL NEWSLETTER TTS SYSTEM - FIXED =====
 
 let speechSynthesis = window.speechSynthesis;
 let currentUtterance = null;
@@ -9,26 +8,42 @@ let allArticles = [];
 let currentArticleIndex = 0;
 let voicesLoaded = false;
 
+// CRITICAL: Store the current text being read for resume functionality
+let currentArticleText = '';
+let currentCharIndex = 0;
+
 // Wait for page to fully load
 window.addEventListener('load', function() {
-  // Give browser time to load voices
-  setTimeout(() => {
+  // Force voice loading
+  speechSynthesis.getVoices();
+  
+  // Wait for voices with multiple attempts
+  let attempts = 0;
+  const checkVoices = setInterval(() => {
     const voices = speechSynthesis.getVoices();
+    attempts++;
+    
     if (voices.length > 0) {
       voicesLoaded = true;
-      console.log('TTS voices loaded:', voices.length);
+      console.log('✓ TTS voices loaded:', voices.length);
+      clearInterval(checkVoices);
+      initializeGlobalTTS();
+    } else if (attempts > 20) {
+      console.warn('⚠ Voices not loading, initializing anyway');
+      clearInterval(checkVoices);
+      initializeGlobalTTS();
     }
   }, 100);
   
-  // Load voices (important for Chrome/Edge)
+  // Backup: voices changed event
   if (speechSynthesis.onvoiceschanged !== undefined) {
     speechSynthesis.onvoiceschanged = () => {
-      voicesLoaded = true;
-      console.log('TTS voices changed, loaded:', speechSynthesis.getVoices().length);
+      if (!voicesLoaded) {
+        voicesLoaded = true;
+        console.log('✓ TTS voices loaded via event:', speechSynthesis.getVoices().length);
+      }
     };
   }
-  
-  initializeGlobalTTS();
 });
 
 function initializeGlobalTTS() {
@@ -37,11 +52,11 @@ function initializeGlobalTTS() {
   const floatingControl = document.getElementById('floating-tts-control');
   
   if (!globalPlayButton) {
-    console.error('Global play button not found');
+    console.error('❌ Global play button not found');
     return;
   }
   
-  console.log('Initializing TTS system...');
+  console.log('🎵 Initializing TTS system...');
   
   // Calculate reading time
   calculateReadingTime();
@@ -49,42 +64,14 @@ function initializeGlobalTTS() {
   // Global play button click
   globalPlayButton.addEventListener('click', (e) => {
     e.preventDefault();
-    console.log('Global button clicked. State:', { isPlaying, isPaused });
-    
-    if (!isPlaying && !isPaused) {
-      // Start fresh
-      console.log('Starting fresh reading...');
-      startNewsletterReading();
-    } else if (isPaused) {
-      // Resume from pause
-      console.log('Resuming...');
-      resumeReading();
-    } else if (isPlaying) {
-      // Pause
-      console.log('Pausing...');
-      pauseReading();
-    }
+    handlePlayPause();
   });
   
-  // Floating player control - handles all states
+  // Floating player control
   if (floatingControl) {
     floatingControl.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log('Floating control clicked. State:', { isPlaying, isPaused });
-      
-      if (!isPlaying && !isPaused) {
-        // Restart from beginning if stopped
-        console.log('Restarting from beginning...');
-        startNewsletterReading();
-      } else if (isPaused) {
-        // Resume from pause
-        console.log('Resuming from pause...');
-        resumeReading();
-      } else if (isPlaying) {
-        // Pause
-        console.log('Pausing...');
-        pauseReading();
-      }
+      handlePlayPause();
     });
   }
   
@@ -93,7 +80,6 @@ function initializeGlobalTTS() {
   if (floatingStop) {
     floatingStop.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log('Stop button clicked');
       stopReading();
     });
   }
@@ -103,7 +89,6 @@ function initializeGlobalTTS() {
   if (floatingSkip) {
     floatingSkip.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log('Skip button clicked');
       skipToNextArticle();
     });
   }
@@ -111,12 +96,26 @@ function initializeGlobalTTS() {
   // Stop on Escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && (isPlaying || isPaused)) {
-      console.log('Escape pressed, stopping...');
       stopReading();
     }
   });
   
-  console.log('TTS system initialized');
+  console.log('✓ TTS system initialized');
+}
+
+function handlePlayPause() {
+  console.log('🎮 Play/Pause clicked. State:', { isPlaying, isPaused });
+  
+  if (!isPlaying && !isPaused) {
+    // START: Fresh start
+    startNewsletterReading();
+  } else if (isPaused) {
+    // RESUME: Continue from where we paused
+    resumeReading();
+  } else if (isPlaying) {
+    // PAUSE: Pause current playback
+    pauseReading();
+  }
 }
 
 function calculateReadingTime() {
@@ -136,8 +135,6 @@ function calculateReadingTime() {
   if (readingTimeEl) {
     readingTimeEl.textContent = `(~${minutes} min)`;
   }
-  
-  console.log('Total words:', totalWords, 'Reading time:', minutes, 'min');
 }
 
 function gatherAllArticles() {
@@ -157,19 +154,27 @@ function gatherAllArticles() {
     }
   });
   
-  console.log('Gathered articles:', allArticles.length);
+  console.log(`📚 Gathered ${allArticles.length} articles`);
   return allArticles;
 }
 
 function startNewsletterReading() {
-  console.log('Starting newsletter reading...');
+  console.log('▶ Starting newsletter reading...');
   
-  // First, ensure any previous speech is stopped
-  if (speechSynthesis.speaking) {
-    console.log('Canceling previous speech...');
+  // CRITICAL: Cancel any existing speech first
+  if (speechSynthesis.speaking || speechSynthesis.pending) {
+    console.log('⚠ Canceling previous speech...');
     speechSynthesis.cancel();
+    // Wait for cancellation to complete
+    setTimeout(() => continueStarting(), 200);
+    return;
   }
   
+  continueStarting();
+}
+
+function continueStarting() {
+  // Gather articles
   gatherAllArticles();
   
   if (allArticles.length === 0) {
@@ -177,35 +182,17 @@ function startNewsletterReading() {
     return;
   }
   
-  // Ensure voices are loaded
+  // Check voices
   let voices = speechSynthesis.getVoices();
   if (voices.length === 0) {
-    console.log('No voices loaded yet, waiting...');
-    // Try to trigger voice loading
-    speechSynthesis.getVoices();
-    // Wait a bit and try again
-    setTimeout(() => {
-      voices = speechSynthesis.getVoices();
-      if (voices.length === 0) {
-        console.error('Still no voices available');
-        alert('Text-to-speech voices not available. Please try again.');
-        return;
-      }
-      voicesLoaded = true;
-      console.log('Voices now available:', voices.length);
-      continueStarting();
-    }, 500);
+    console.warn('⚠ No voices available yet');
+    alert('Text-to-speech not ready. Please wait a moment and try again.');
     return;
   }
   
-  voicesLoaded = true;
-  continueStarting();
-}
-
-function continueStarting() {
-  console.log('Continuing start...');
-  
+  // Reset state
   currentArticleIndex = 0;
+  currentCharIndex = 0;
   isPlaying = true;
   isPaused = false;
   
@@ -213,51 +200,59 @@ function continueStarting() {
   const floatingPlayer = document.getElementById('floating-tts-player');
   if (floatingPlayer) {
     floatingPlayer.classList.remove('hidden');
-    console.log('Floating player shown');
   }
   
-  // Update buttons
+  // Update UI
   updateGlobalButton('pause');
   updateFloatingButton('pause');
   
-  // Start reading with a small delay to ensure everything is ready
-  setTimeout(() => {
-    console.log('Starting to read first article...');
-    readNextArticle();
-  }, 100);
+  // Start reading
+  console.log('🎤 Starting to read articles...');
+  readNextArticle();
 }
 
 function readNextArticle() {
-  console.log('Reading article', currentArticleIndex + 1, 'of', allArticles.length);
+  console.log(`📖 Reading article ${currentArticleIndex + 1}/${allArticles.length}`);
   
+  // Check if finished
   if (currentArticleIndex >= allArticles.length) {
-    console.log('Finished all articles');
+    console.log('✓ Finished all articles');
     stopReading();
     return;
   }
   
   const article = allArticles[currentArticleIndex];
   
-  // Update floating player status
-  updateFloatingStatus(`Reading article ${currentArticleIndex + 1} of ${allArticles.length}`);
+  // Update status
+  updateFloatingStatus(`Reading ${currentArticleIndex + 1} of ${allArticles.length}`);
   
   // Scroll to article
   if (article.element) {
     article.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
   
-  // Create utterance
-  const textToRead = `${article.title}. ${article.content}`;
-  console.log('Creating utterance for:', textToRead.substring(0, 50) + '...');
+  // Store full text for resume functionality
+  currentArticleText = `${article.title}. ${article.content}`;
+  currentCharIndex = 0;
   
-  currentUtterance = new SpeechSynthesisUtterance(textToRead);
+  // Create utterance
+  speakText(currentArticleText);
+}
+
+function speakText(text) {
+  // Cancel any existing speech
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+  }
+  
+  // Create new utterance
+  currentUtterance = new SpeechSynthesisUtterance(text);
   
   // Select voice
   const voices = speechSynthesis.getVoices();
   const preferredVoice = selectBestVoice(voices);
   if (preferredVoice) {
     currentUtterance.voice = preferredVoice;
-    console.log('Using voice:', preferredVoice.name);
   }
   
   // Settings
@@ -265,96 +260,94 @@ function readNextArticle() {
   currentUtterance.pitch = 1.1;
   currentUtterance.volume = 1.0;
   
+  // Event handlers
   currentUtterance.onstart = () => {
-    console.log('Speech started for article', currentArticleIndex + 1);
+    console.log('🎤 Speech started');
+    isPlaying = true;
+    isPaused = false;
   };
   
   currentUtterance.onend = () => {
-    console.log('Speech ended for article', currentArticleIndex + 1);
-    currentArticleIndex++;
-    // Small delay before next article
-    setTimeout(() => {
-      readNextArticle();
-    }, 500);
+    console.log('✓ Speech ended');
+    
+    // Only proceed if we're still in playing state
+    if (isPlaying && !isPaused) {
+      currentArticleIndex++;
+      setTimeout(() => readNextArticle(), 500);
+    }
   };
   
   currentUtterance.onerror = (event) => {
-    console.error('Speech error:', event);
+    console.error('❌ Speech error:', event.error);
+    
+    // Handle interrupted error (happens on cancel)
+    if (event.error === 'interrupted' || event.error === 'canceled') {
+      console.log('ℹ Speech was interrupted (normal for pause/stop)');
+      return;
+    }
+    
+    // For other errors, skip to next
     currentArticleIndex++;
-    readNextArticle();
+    if (isPlaying) {
+      readNextArticle();
+    }
   };
   
-  console.log('Speaking...');
+  // Speak
+  console.log('🔊 Speaking...');
   speechSynthesis.speak(currentUtterance);
 }
 
-function selectBestVoice(voices) {
-  if (!voices || voices.length === 0) return null;
-  
-  const voicePriority = [
-    { name: 'Google US English', gender: 'female' },
-    { name: 'Google UK English Female', gender: 'female' },
-    { name: 'Microsoft Zira', lang: 'en-US' },
-    { name: 'Microsoft Susan', lang: 'en-GB' },
-    { name: 'Samantha', lang: 'en-US' },
-    { name: 'Karen', lang: 'en-AU' },
-    { name: 'Moira', lang: 'en-IE' },
-    { name: 'Alex', lang: 'en-US' },
-    { name: 'Fiona', lang: 'en-GB' },
-  ];
-  
-  for (const preferred of voicePriority) {
-    const voice = voices.find(v => 
-      v.name.includes(preferred.name) || 
-      (preferred.lang && v.lang.includes(preferred.lang))
-    );
-    if (voice) return voice;
-  }
-  
-  const femaleVoice = voices.find(v => 
-    v.lang.startsWith('en') && 
-    (v.name.toLowerCase().includes('female') || 
-     v.name.toLowerCase().includes('woman') ||
-     v.name.includes('Zira') ||
-     v.name.includes('Susan'))
-  );
-  if (femaleVoice) return femaleVoice;
-  
-  const englishVoice = voices.find(v => v.lang.startsWith('en'));
-  return englishVoice || voices[0];
-}
-
 function pauseReading() {
-  console.log('Pausing reading...');
-  if (speechSynthesis.speaking && !speechSynthesis.paused) {
-    speechSynthesis.pause();
-    isPaused = true;
-    isPlaying = true;
-    updateGlobalButton('resume');
-    updateFloatingButton('resume');
-    updateFloatingStatus('Paused');
-    console.log('Paused successfully');
+  console.log('⏸ Pausing...');
+  
+  if (!speechSynthesis.speaking) {
+    console.warn('⚠ Nothing playing to pause');
+    return;
   }
+  
+  // IMPORTANT: speechSynthesis.pause() is unreliable across browsers
+  // Better to cancel and remember position
+  speechSynthesis.cancel();
+  
+  isPaused = true;
+  isPlaying = false;
+  
+  updateGlobalButton('resume');
+  updateFloatingButton('resume');
+  updateFloatingStatus('Paused');
+  
+  console.log('✓ Paused');
 }
 
 function resumeReading() {
-  console.log('Resuming reading...');
-  if (speechSynthesis.paused) {
-    speechSynthesis.resume();
-    isPaused = false;
-    isPlaying = true;
-    updateGlobalButton('pause');
-    updateFloatingButton('pause');
-    updateFloatingStatus(`Reading article ${currentArticleIndex + 1} of ${allArticles.length}`);
-    console.log('Resumed successfully');
+  console.log('▶ Resuming...');
+  
+  if (!isPaused) {
+    console.warn('⚠ Not paused, cannot resume');
+    return;
   }
+  
+  isPaused = false;
+  isPlaying = true;
+  
+  updateGlobalButton('pause');
+  updateFloatingButton('pause');
+  updateFloatingStatus(`Reading ${currentArticleIndex + 1} of ${allArticles.length}`);
+  
+  // Re-read current article from where we left off
+  // Note: We're re-reading from the start of current article
+  // True character-level resume is complex with Web Speech API
+  speakText(currentArticleText);
+  
+  console.log('✓ Resumed');
 }
 
 function stopReading() {
-  console.log('Stopping reading...');
+  console.log('⏹ Stopping...');
   
   // Cancel speech
-  if (speechSynthesis.speaking) {
+  if (speechSynthesis.speaking || speechSynthesis.pending) {
     speechSynthesis.cancel();
   }
   
@@ -362,6 +355,8 @@ function stopReading() {
   isPlaying = false;
   isPaused = false;
   currentArticleIndex = 0;
+  currentCharIndex = 0;
+  currentArticleText = '';
   currentUtterance = null;
   
   // Hide floating player
@@ -374,30 +369,33 @@ function stopReading() {
   updateGlobalButton('play');
   updateFloatingButton('play');
   
-  console.log('Stopped successfully. State reset.');
+  console.log('✓ Stopped and reset');
 }
 
 function skipToNextArticle() {
-  console.log('Skipping to next article...');
+  console.log('⏭ Skipping to next...');
   
-  if (!isPlaying && !isPaused) return;
+  if (!isPlaying && !isPaused) {
+    console.warn('⚠ Not playing, cannot skip');
+    return;
+  }
   
-  // Stop current speech
+  // Cancel current speech
   if (speechSynthesis.speaking) {
     speechSynthesis.cancel();
   }
   
-  // Move to next article
+  // Move to next
   currentArticleIndex++;
   
-  // If at end, stop
+  // Check if at end
   if (currentArticleIndex >= allArticles.length) {
-    console.log('No more articles, stopping');
+    console.log('ℹ No more articles');
     stopReading();
     return;
   }
   
-  // Reset pause state
+  // Reset pause if paused
   if (isPaused) {
     isPaused = false;
     isPlaying = true;
@@ -406,7 +404,30 @@ function skipToNextArticle() {
   }
   
   // Read next
-  readNextArticle();
+  setTimeout(() => readNextArticle(), 100);
+}
+
+function selectBestVoice(voices) {
+  if (!voices || voices.length === 0) return null;
+  
+  const voicePriority = [
+    'Google US English',
+    'Google UK English Female',
+    'Microsoft Zira',
+    'Samantha',
+    'Karen',
+    'Alex'
+  ];
+  
+  // Try priority list
+  for (const preferred of voicePriority) {
+    const voice = voices.find(v => v.name.includes(preferred));
+    if (voice) return voice;
+  }
+  
+  // Fallback to any English voice
+  const englishVoice = voices.find(v => v.lang.startsWith('en'));
+  return englishVoice || voices[0];
 }
 
 function updateGlobalButton(state) {
@@ -422,11 +443,11 @@ function updateGlobalButton(state) {
     button.classList.remove('playing');
   } else if (state === 'pause') {
     icon.textContent = '⏸';
-    text.textContent = 'Pause Newsletter';
+    text.textContent = 'Pause';
     button.classList.add('playing');
   } else if (state === 'resume') {
     icon.textContent = '▶';
-    text.textContent = 'Resume Newsletter';
+    text.textContent = 'Resume';
     button.classList.add('playing');
   }
 }
@@ -435,12 +456,10 @@ function updateFloatingButton(state) {
   const icon = document.getElementById('floating-tts-icon');
   if (!icon) return;
   
-  if (state === 'play') {
+  if (state === 'play' || state === 'resume') {
     icon.textContent = '▶';
   } else if (state === 'pause') {
     icon.textContent = '⏸';
-  } else if (state === 'resume') {
-    icon.textContent = '▶';
   }
 }
 
@@ -451,31 +470,33 @@ function updateFloatingStatus(text) {
   }
 }
 
-// Cleanup on page unload
+// ===== CLEANUP AND ERROR HANDLING =====
+
+// Stop on page unload
 window.addEventListener('beforeunload', () => {
-  console.log('Page unloading, cleaning up TTS...');
+  console.log('🔄 Page unloading, cleanup...');
   if (speechSynthesis.speaking) {
     speechSynthesis.cancel();
   }
   stopReading();
 });
 
-// Pause when tab hidden
+// Pause when tab hidden (optional, can be annoying)
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && isPlaying && !isPaused) {
-    console.log('Tab hidden, pausing...');
+    console.log('👁 Tab hidden, auto-pausing...');
     pauseReading();
   }
 });
 
-// Recalculate when filters change
+// Stop on route change (if using filters)
 if (typeof applyFilters !== 'undefined') {
   const originalApplyFilters = applyFilters;
   applyFilters = function() {
     stopReading();
     originalApplyFilters();
-    setTimeout(() => {
-      calculateReadingTime();
-    }, 200);
+    setTimeout(() => calculateReadingTime(), 200);
   };
 }
+
+console.log('✅ TTS module loaded');
