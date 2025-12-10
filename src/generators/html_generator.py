@@ -353,14 +353,14 @@ def generate_section(
             
             html += f'''<div class="share-container">
     <button class="share-button" onclick="toggleShareMenu(this)">
-        <span>📤</span> Share
+        <span class="share-arrow">↗</span> Share
     </button>
     <div class="share-menu">
         <button class="share-option" onclick="shareLinkedIn('{share_url}')">
-            <span class="share-icon">💼</span> LinkedIn
+            <span class="share-icon">in</span> LinkedIn
         </button>
         <button class="share-option" onclick="shareTwitter('{share_url}', '{share_title}')">
-            <span class="share-icon">🐦</span> Twitter
+            <span class="share-icon">𝕏</span> Twitter
         </button>
         <button class="share-option" onclick="copyLink('{share_url}', this)">
             <span class="share-icon">🔗</span> Copy Link

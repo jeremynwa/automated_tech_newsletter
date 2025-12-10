@@ -1,6 +1,3 @@
-// Share functionality
-// Add this file as webapp/static/js/share.js
-
 function toggleShareMenu(button) {
   const menu = button.nextElementSibling;
   const allMenus = document.querySelectorAll('.share-menu');

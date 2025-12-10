@@ -1,0 +1,461 @@
+/* ===== GLOBAL TTS SYSTEM ===== */
+
+/* Listen banner under subtitle */
+.listen-banner {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.global-play-button {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.global-play-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.global-play-button.playing {
+  background: rgba(16, 185, 129, 0.3);
+  border-color: #10b981;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+}
+
+.play-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  font-weight: bold;
+}
+
+.reading-time {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+/* Floating TTS Player */
+.floating-tts-player {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  border: 2px solid var(--accent-primary);
+  border-radius: 50px;
+  padding: 0.8rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  animation: slideUp 0.3s ease;
+  backdrop-filter: blur(20px);
+}
+
+.floating-tts-player.hidden {
+  display: none;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.floating-tts-control {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.floating-tts-control:hover {
+  background: var(--accent-secondary);
+  transform: scale(1.1);
+}
+
+.floating-tts-icon {
+  font-weight: bold;
+  line-height: 1;
+}
+
+.floating-tts-skip {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid var(--accent-primary);
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.floating-tts-skip:hover {
+  background: var(--accent-primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+.floating-tts-info {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.floating-tts-stop {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid var(--text-meta);
+  color: var(--text-meta);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.floating-tts-stop:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Remove old TTS button styles since we don't need them */
+.tts-button {
+  display: none !important;
+}
+
+/* ===== TEXT-TO-SPEECH BUTTON STYLES ===== */
+.tts-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 8px 20px;
+  background: var(--bg-card);
+  border: 2px solid #10b981;
+  color: #10b981;
+  border-radius: 8px;
+  font-size: 0.9em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tts-button:hover {
+  background: #10b981;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.tts-button.speaking {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: white;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.tts-icon {
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: bold;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+  }
+}
+
+/* Global TTS Toggle */
+.global-tts-toggle {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.global-tts-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.global-tts-toggle.active {
+  background: rgba(16, 185, 129, 0.3);
+  border-color: #10b981;
+}
+
+/* ===== PDF EXPORT BUTTON STYLES ===== */
+.export-pdf-button {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.export-pdf-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.export-pdf-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Header controls container */
+.header-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+/* ===== SIMILAR ARTICLES STYLES ===== */
+.similar-articles-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 8px 20px;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  border: none;
+  color: white;
+  border-radius: 8px;
+  font-size: 0.9em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+}
+
+.similar-articles-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+}
+
+.similar-articles-container {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 2px solid #8b5cf6;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.similar-articles-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.similar-articles-header h4 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.similar-articles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.similar-article-card {
+  background: var(--bg-card);
+  padding: 1rem;
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.similar-article-card:hover {
+  border-color: #8b5cf6;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
+}
+
+.similar-article-date {
+  font-size: 0.75rem;
+  color: var(--text-meta);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.similar-article-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.similar-article-summary {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  flex-grow: 1;
+}
+
+.similar-article-link {
+  color: #8b5cf6;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  margin-top: auto;
+}
+
+.similar-article-card:hover .similar-article-link {
+  color: #7c3aed;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+
+@media (max-width: 768px) {
+  .header-controls {
+    position: static;
+    margin: 1rem auto 0;
+    width: fit-content;
+    flex-direction: column;
+  }
+  
+  .listen-banner {
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+  
+  .global-play-button {
+    font-size: 0.9rem;
+    padding: 0.7rem 1.2rem;
+  }
+  
+  .floating-tts-player {
+    bottom: 20px;
+    padding: 0.6rem 1rem;
+    gap: 0.75rem;
+  }
+  
+  .floating-tts-control {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+  
+  .floating-tts-info {
+    font-size: 0.85rem;
+  }
+  
+  .similar-articles-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .similar-articles-button {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  .links {
+    flex-direction: column;
+  }
+}
