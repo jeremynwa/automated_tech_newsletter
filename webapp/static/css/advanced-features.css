@@ -268,6 +268,7 @@
   color: white;
   font-weight: 600;
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .export-pdf-button:hover:not(:disabled) {
@@ -281,12 +282,12 @@
   cursor: not-allowed;
 }
 
-/* Header controls container */
+/* Header controls container - FIXED */
 .header-controls {
   position: absolute;
   top: 0;
   right: 0;
-  display: inline-flex;
+  display: flex;
   gap: 0.75rem;
   align-items: center;
   flex-wrap: nowrap;
@@ -418,6 +419,12 @@
     margin: 1rem auto 0;
     width: fit-content;
     flex-direction: column;
+  }
+  
+  .export-pdf-button,
+  .theme-toggle {
+    width: 100%;
+    justify-content: center;
   }
   
   .listen-banner {
