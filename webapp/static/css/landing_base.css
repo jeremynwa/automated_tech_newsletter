@@ -1,0 +1,41 @@
+/* Full screen */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif; /* adjust if your app uses another */
+    color: white;
+}
+
+/* Center content */
+.center-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Invisible-outline button */
+.enter-btn {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px 28px;
+    border: none;
+    font-size: 1.3rem;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.25s ease;
+}
+
+.enter-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}

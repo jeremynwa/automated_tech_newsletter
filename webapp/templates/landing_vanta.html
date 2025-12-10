@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Automated Tech Newsletter</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        color: white;
+      }
+      .center-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        z-index: 1;
+      }
+      .title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      }
+      .enter-btn {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 12px 28px;
+        border: none;
+        font-size: 1.3rem;
+        color: white;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: 0.25s ease;
+      }
+      .enter-btn:hover {
+        background: rgba(255, 255, 255, 0.35);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- This div is the background container for Vanta effects -->
+    <div
+      id="vanta-bg"
+      style="
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      "
+    ></div>
+
+    <div class="center-container">
+      <h1 class="title">Automated Tech Newsletter</h1>
+      <button class="enter-btn" onclick="goHome()">Enter</button>
+    </div>
+
+    <!-- Load Three.js and Vanta.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    <script>
+      // Initialize a Vanta background effect (NET). You can switch to WAVES, GLOBE, FOG, BIRDS etc.
+      VANTA.NET({
+        el: "#vanta-bg",
+        backgroundColor: 0x10132e,
+        color: 0x00ffff,
+        points: 8.0,
+        maxDistance: 25.0,
+        spacing: 20.0,
+        showDots: true,
+      });
+
+      function goHome() {
+        window.location.href = "{{ url_for('index') }}";
+      }
+    </script>
+  </body>
+</html>

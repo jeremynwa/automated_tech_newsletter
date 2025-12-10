@@ -7,6 +7,8 @@ from pathlib import Path
 import os
 from datetime import datetime
 import re
+import random
+from flask import render_template
 
 app = Flask(__name__)
 
@@ -14,6 +16,10 @@ app = Flask(__name__)
 ARCHIVE_DIR = Path(__file__).parent.parent / 'archive'
 
 @app.route('/')
+def landing():
+    return render_template("landing_vanta.html")
+
+@app.route('/home')
 def index():
     """Main page - shows all digests in chronological order (newest first)"""
     # Get all HTML files from archive, sorted by date (newest first)
