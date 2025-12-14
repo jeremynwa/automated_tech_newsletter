@@ -1,5 +1,5 @@
 # API clients
-google-generativeai
+google-genai
 requests
 openai
 
